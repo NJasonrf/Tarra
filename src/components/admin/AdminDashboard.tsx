@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Download, ArrowUpDown } from "lucide-react";
+import { Download, ArrowUpDown, Search } from "lucide-react";
 import DrillDownTable from "./DrillDownTable";
 
 interface AdminUser {
@@ -61,6 +61,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, current
     end_date: ""
   });
 
+  // Search state — filters client-side by name, email, or referral code
+  const [searchQuery, setSearchQuery] = useState("");
+
   const handleExportCSV = () => {
     // Triggers the server-side CSV generation endpoint with filters
     const params = new URLSearchParams();
@@ -115,6 +118,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, current
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search by name, email, or referral code..."
+            className="w-full pl-10 pr-4 py-2.5 bg-dark border border-muted/20 rounded-lg text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-secondary/50"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
 
         {/* Filter Bar */}
@@ -178,7 +193,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, current
               </tr>
             </thead>
             <tbody className="divide-y divide-muted/5">
-              {users.map((user) => (
+              {users
+                .filter((user) => {
+                  if (!searchQuery.trim()) return true;
+                  const q = searchQuery.toLowerCase();
+                  return (
+                    user.full_name.toLowerCase().includes(q) ||
+                    user.email.toLowerCase().includes(q) ||
+                    user.referral_code.toLowerCase().includes(q)
+                  );
+                })
+                .map((user) => (
                 <tr key={user.id} className="hover:bg-primary/5 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
