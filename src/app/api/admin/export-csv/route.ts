@@ -36,19 +36,7 @@ export async function GET(request: Request) {
 
   await dbConnect();
 
-  // 2. Data Aggregation
-  // Operational Intent: Launch teams use this to identify "Super Referrers" (min_referrals filter)
-  // for VIP onboarding or analyzing specific influencer campaigns (referred_by filter).
-  
-  const referralCounts = await Waitlist.aggregate([
-    { $match: { referred_by: { $ne: null }, is_ghost: { $ne: true } } },
-    { $group: { _id: "$referred_by", count: { $sum: 1 } } }
-  ]);
-
-  const countMap = new Map();
-  referralCounts.forEach(r => countMap.set(r._id, r.count));
-
-  // Build secure query object
+  // 2. Build secure query object
   const query: any = {};
   
   if (filterReferrer) {
@@ -66,9 +54,23 @@ export async function GET(request: Request) {
     }
   }
 
-  // 3. User & Referrer Retrieval (Optimized with Lookup)
-  const usersWithReferrers = await Waitlist.aggregate([
+  // 3. Optimized Data Retrieval
+  // Using the same reliable pattern as the dashboard page for consistency
+  const users = await Waitlist.aggregate([
     { $match: { ...query, is_ghost: { $ne: true } } },
+    {
+      $lookup: {
+        from: "waitlists",
+        localField: "referral_code",
+        foreignField: "referred_by",
+        as: "referral_details",
+      },
+    },
+    {
+      $addFields: {
+        referral_count: { $size: "$referral_details" }
+      }
+    },
     {
       $lookup: {
         from: "waitlists",
@@ -85,31 +87,52 @@ export async function GET(request: Request) {
     { $sort: { created_at: -1 } }
   ]);
 
-  // 4. CSV Generation
-  const headers = ["full_name,email,phone_number,referral_count,referred_by_code,referrer_email,created_at"];
-  
+  // 3. CSV Formatting logic
+  // Added "sep=," for better Excel handling across locales
+  const csvHeaders = [
+    "Full Name",
+    "Email Address",
+    "Phone Number",
+    "Referral Count",
+    "Own Referral Code",
+    "Actually Referred By",
+    "Referrer Email",
+    "Joined At"
+  ];
+
   const csvRows: string[] = [];
 
-  for (const user of usersWithReferrers) {
-    const count = countMap.get(user.referral_code) || 0;
+  for (const user of users) {
+    const count = user.referral_count || 0;
     
-    if (count < minReferrals) {
-      continue;
-    }
+    // Server-side filtering for min referrals
+    if (count < minReferrals) continue;
 
-    const cleanName = user.full_name?.replace(/"/g, '""') || "";
-    const referredEmail = user.email || "";
-    const cleanPhone = user.phone_number || ""; 
-    const referredByCode = user.referred_by || "";
-    const referrerEmail = user.referrer_email || "DIRECT";
-    const createdAt = user.created_at ? new Date(user.created_at).toISOString() : "";
+    const row = [
+      user.full_name || "",
+      user.email || "",
+      user.phone_number || "",
+      count.toString(),
+      user.referral_code || "",
+      user.referred_by || "DIRECT",
+      user.referrer_email || "N/A",
+      user.created_at ? new Date(user.created_at).toISOString() : ""
+    ];
 
-    csvRows.push(
-      `"${cleanName}","${referredEmail}","${cleanPhone}",${count},"${referredByCode}","${referrerEmail}","${createdAt}"`
-    );
+    // Escape and quote each field
+    const escapedRow = row.map(field => {
+      const escaped = String(field).replace(/"/g, '""');
+      return `"${escaped}"`;
+    });
+
+    csvRows.push(escapedRow.join(","));
   }
 
-  const csvContent = headers.concat(csvRows).join("\n");
+  const csvContent = [
+    "sep=,",
+    csvHeaders.join(","),
+    ...csvRows
+  ].join("\n");
   
   const bom = "\uFEFF";
   const finalCsv = bom + csvContent;
