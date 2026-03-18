@@ -25,6 +25,7 @@ export async function GET(request: Request) {
   const filterReferrer = searchParams.get('referred_by');
   const startDate = searchParams.get('start_date');
   const endDate = searchParams.get('end_date');
+  const onlyNumbers = searchParams.get('only_numbers') === 'true';
 
   const cookieStore = await cookies();
   const session = cookieStore.get("lighthouse_session");
@@ -55,7 +56,6 @@ export async function GET(request: Request) {
   }
 
   // 3. Optimized Data Retrieval
-  // Using the same reliable pattern as the dashboard page for consistency
   const users = await Waitlist.aggregate([
     { $match: { ...query, is_ghost: { $ne: true } } },
     {
@@ -71,34 +71,37 @@ export async function GET(request: Request) {
         referral_count: { $size: "$referral_details" }
       }
     },
-    {
-      $lookup: {
-        from: "waitlists",
-        localField: "referred_by",
-        foreignField: "referral_code",
-        as: "referrer_data"
+    ...(!onlyNumbers ? [
+      {
+        $lookup: {
+          from: "waitlists",
+          localField: "referred_by",
+          foreignField: "referral_code",
+          as: "referrer_data"
+        }
+      },
+      {
+        $addFields: {
+          referrer_email: { $arrayElemAt: ["$referrer_data.email", 0] }
+        }
       }
-    },
-    {
-      $addFields: {
-        referrer_email: { $arrayElemAt: ["$referrer_data.email", 0] }
-      }
-    },
+    ] : []),
     { $sort: { created_at: -1 } }
   ]);
 
-  // 3. CSV Formatting logic
-  // Added "sep=," for better Excel handling across locales
-  const csvHeaders = [
-    "Full Name",
-    "Email Address",
-    "Phone Number",
-    "Referral Count",
-    "Own Referral Code",
-    "Actually Referred By",
-    "Referrer Email",
-    "Joined At"
-  ];
+  // 4. CSV Formatting logic
+  const csvHeaders = onlyNumbers 
+    ? ["Phone Number"]
+    : [
+        "Full Name",
+        "Email Address",
+        "Phone Number",
+        "Referral Count",
+        "Own Referral Code",
+        "Actually Referred By",
+        "Referrer Email",
+        "Joined At"
+      ];
 
   const csvRows: string[] = [];
 
@@ -108,16 +111,18 @@ export async function GET(request: Request) {
     // Server-side filtering for min referrals
     if (count < minReferrals) continue;
 
-    const row = [
-      user.full_name || "",
-      user.email || "",
-      user.phone_number || "",
-      count.toString(),
-      user.referral_code || "",
-      user.referred_by || "DIRECT",
-      user.referrer_email || "N/A",
-      user.created_at ? new Date(user.created_at).toISOString() : ""
-    ];
+    const row = onlyNumbers 
+      ? [user.phone_number || ""]
+      : [
+          user.full_name || "",
+          user.email || "",
+          user.phone_number || "",
+          count.toString(),
+          user.referral_code || "",
+          user.referred_by || "DIRECT",
+          user.referrer_email || "N/A",
+          user.created_at ? new Date(user.created_at).toISOString() : ""
+        ];
 
     // Escape and quote each field
     const escapedRow = row.map(field => {
@@ -137,10 +142,14 @@ export async function GET(request: Request) {
   const bom = "\uFEFF";
   const finalCsv = bom + csvContent;
 
+  const filename = onlyNumbers 
+    ? `tarra_phone_numbers_${new Date().toISOString().split('T')[0]}.csv`
+    : `tarra_audit_export_${new Date().toISOString().split('T')[0]}.csv`;
+
   return new NextResponse(finalCsv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="tarra_audit_export_${new Date().toISOString().split('T')[0]}.csv"`,
+      "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
 }

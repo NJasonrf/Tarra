@@ -78,6 +78,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, current
     window.location.href = `/api/admin/export-csv?${params.toString()}`;
   };
 
+  const handleExportNumbers = () => {
+    const params = new URLSearchParams();
+    if (filters.min_referrals) params.append("min_referrals", filters.min_referrals);
+    if (filters.referred_by) params.append("referred_by", filters.referred_by);
+    if (filters.start_date) params.append("start_date", filters.start_date);
+    if (filters.end_date) params.append("end_date", filters.end_date);
+    params.append("only_numbers", "true");
+    
+    window.location.href = `/api/admin/export-csv?${params.toString()}`;
+  };
+
   const handleSortChange = (value: string) => {
     router.push(`/lighthouse?sort=${value}`);
   };
@@ -193,13 +204,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, current
               />
             </div>
           </div>
-          <button
-            onClick={handleExportCSV}
-            className="flex items-center justify-center gap-2 px-4 py-1.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded shadow-lg shadow-primary/20 hover:brightness-110 sm:ml-auto transition-all h-10 w-full sm:w-auto"
-          >
-            <Download className="w-3 h-3" />
-            Download Filtered CSV
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2 sm:ml-auto w-full sm:w-auto">
+            <button
+              onClick={handleExportNumbers}
+              className="flex items-center justify-center gap-2 px-4 py-1.5 bg-dark border border-muted/20 text-white text-xs font-bold uppercase tracking-wider rounded hover:bg-muted/10 transition-all h-10 flex-grow sm:flex-initial"
+            >
+              <Download className="w-3 h-3" />
+              Numbers Only
+            </button>
+            <button
+              onClick={handleExportCSV}
+              className="flex items-center justify-center gap-2 px-4 py-1.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded shadow-lg shadow-primary/20 hover:brightness-110 transition-all h-10 flex-grow sm:flex-initial"
+            >
+              <Download className="w-3 h-3" />
+              Full CSV
+            </button>
+          </div>
         </div>
       </div>
 
