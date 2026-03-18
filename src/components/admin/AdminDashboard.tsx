@@ -183,10 +183,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, current
             />
           </div>
           <div className="flex flex-col gap-1 sm:w-40">
-            <label className="text-[10px] uppercase font-bold text-secondary">Topic / Referrer Code</label>
+            <label className="text-[10px] uppercase font-bold text-secondary">Referrer Code</label>
             <input 
               type="text" 
-              placeholder="Filter by code..."
+              placeholder="Filter by source..."
               className="px-3 py-1.5 bg-dark border border-muted/20 rounded text-sm text-white focus:outline-none focus:border-primary w-full"
               value={filters.referred_by}
               onChange={(e) => setFilters({...filters, referred_by: e.target.value})}
@@ -249,13 +249,38 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, current
             <tbody className="divide-y divide-muted/5">
               {users
                 .filter((user) => {
-                  if (!searchQuery.trim()) return true;
-                  const q = searchQuery.toLowerCase();
-                  return (
-                    user.full_name.toLowerCase().includes(q) ||
-                    user.email.toLowerCase().includes(q) ||
-                    user.referral_code.toLowerCase().includes(q)
-                  );
+                  // 1. Search Query Filter
+                  if (searchQuery.trim()) {
+                    const q = searchQuery.toLowerCase();
+                    const matchesSearch = (
+                      user.full_name.toLowerCase().includes(q) ||
+                      user.email.toLowerCase().includes(q) ||
+                      user.referral_code.toLowerCase().includes(q)
+                    );
+                    if (!matchesSearch) return false;
+                  }
+
+                  // 2. Min Referrals Filter
+                  if (filters.min_referrals) {
+                    if (user.referral_count < parseInt(filters.min_referrals)) return false;
+                  }
+
+                  // 3. Referrer Code Filter
+                  if (filters.referred_by) {
+                    if (!user.referred_by?.toLowerCase().includes(filters.referred_by.toLowerCase())) return false;
+                  }
+
+                  // 4. Date Range Filter
+                  if (filters.start_date) {
+                    if (new Date(user.created_at) < new Date(filters.start_date)) return false;
+                  }
+                  if (filters.end_date) {
+                    const end = new Date(filters.end_date);
+                    end.setHours(23, 59, 59, 999);
+                    if (new Date(user.created_at) > end) return false;
+                  }
+
+                  return true;
                 })
                 .map((user) => (
                 <tr key={user.id} className="hover:bg-primary/5 transition-colors">
