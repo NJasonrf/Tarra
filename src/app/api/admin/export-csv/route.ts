@@ -25,7 +25,11 @@ export async function GET(request: Request) {
   const filterReferrer = searchParams.get('referred_by');
   const startDate = searchParams.get('start_date');
   const endDate = searchParams.get('end_date');
-  const onlyNumbers = searchParams.get('only_numbers') === 'true';
+  const columnsParam = searchParams.get('columns');
+  
+  // If no columns specified, it's a "Full Audit" export
+  const requestedColumns = columnsParam ? columnsParam.split(',') : [];
+  const isFullExport = requestedColumns.length === 0;
 
   const cookieStore = await cookies();
   const session = cookieStore.get("lighthouse_session");
@@ -71,7 +75,8 @@ export async function GET(request: Request) {
         referral_count: { $size: "$referral_details" }
       }
     },
-    ...(!onlyNumbers ? [
+    // Only perform the deep join if we need the full audit data
+    ...(isFullExport ? [
       {
         $lookup: {
           from: "waitlists",
@@ -89,19 +94,15 @@ export async function GET(request: Request) {
     { $sort: { created_at: -1 } }
   ]);
 
-  // 4. CSV Formatting logic
-  const csvHeaders = onlyNumbers 
-    ? ["Phone Number"]
-    : [
-        "Full Name",
-        "Email Address",
-        "Phone Number",
-        "Referral Count",
-        "Own Referral Code",
-        "Actually Referred By",
-        "Referrer Email",
-        "Joined At"
-      ];
+  // 4. Dynamic CSV Formatting logic
+  const csvHeaders: string[] = [];
+  if (isFullExport) {
+    csvHeaders.push("Full Name", "Email Address", "Phone Number", "Referral Count", "Own Referral Code", "Actually Referred By", "Referrer Email", "Joined At");
+  } else {
+    if (requestedColumns.includes("name")) csvHeaders.push("Full Name");
+    if (requestedColumns.includes("email")) csvHeaders.push("Email Address");
+    if (requestedColumns.includes("phone")) csvHeaders.push("Phone Number");
+  }
 
   const csvRows: string[] = [];
 
@@ -111,18 +112,23 @@ export async function GET(request: Request) {
     // Server-side filtering for min referrals
     if (count < minReferrals) continue;
 
-    const row = onlyNumbers 
-      ? [user.phone_number || ""]
-      : [
-          user.full_name || "",
-          user.email || "",
-          user.phone_number || "",
-          count.toString(),
-          user.referral_code || "",
-          user.referred_by || "DIRECT",
-          user.referrer_email || "N/A",
-          user.created_at ? new Date(user.created_at).toISOString() : ""
-        ];
+    const row: string[] = [];
+    if (isFullExport) {
+        row.push(
+            user.full_name || "",
+            user.email || "",
+            user.phone_number || "",
+            count.toString(),
+            user.referral_code || "",
+            user.referred_by || "DIRECT",
+            user.referrer_email || "N/A",
+            user.created_at ? new Date(user.created_at).toISOString() : ""
+        );
+    } else {
+        if (requestedColumns.includes("name")) row.push(user.full_name || "");
+        if (requestedColumns.includes("email")) row.push(user.email || "");
+        if (requestedColumns.includes("phone")) row.push(user.phone_number || "");
+    }
 
     // Escape and quote each field
     const escapedRow = row.map(field => {
@@ -142,9 +148,10 @@ export async function GET(request: Request) {
   const bom = "\uFEFF";
   const finalCsv = bom + csvContent;
 
-  const filename = onlyNumbers 
-    ? `tarra_phone_numbers_${new Date().toISOString().split('T')[0]}.csv`
-    : `tarra_audit_export_${new Date().toISOString().split('T')[0]}.csv`;
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = isFullExport 
+    ? `tarra_full_audit_${timestamp}.csv`
+    : `tarra_custom_export_${timestamp}.csv`;
 
   return new NextResponse(finalCsv, {
     headers: {

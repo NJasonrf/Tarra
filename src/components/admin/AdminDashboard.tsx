@@ -64,27 +64,33 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, current
     end_date: ""
   });
 
+  const [selectedColumns, setSelectedColumns] = useState({
+    name: true,
+    email: true,
+    phone: true
+  });
+
   // Search state — filters client-side by name, email, or referral code
   const [searchQuery, setSearchQuery] = useState("");
 
   const handleExportCSV = () => {
-    // Triggers the server-side CSV generation endpoint with filters
+    // Triggers the server-side CSV generation endpoint with filters and selected columns
     const params = new URLSearchParams();
     if (filters.min_referrals) params.append("min_referrals", filters.min_referrals);
     if (filters.referred_by) params.append("referred_by", filters.referred_by);
     if (filters.start_date) params.append("start_date", filters.start_date);
     if (filters.end_date) params.append("end_date", filters.end_date);
     
-    window.location.href = `/api/admin/export-csv?${params.toString()}`;
-  };
-
-  const handleExportNumbers = () => {
-    const params = new URLSearchParams();
-    if (filters.min_referrals) params.append("min_referrals", filters.min_referrals);
-    if (filters.referred_by) params.append("referred_by", filters.referred_by);
-    if (filters.start_date) params.append("start_date", filters.start_date);
-    if (filters.end_date) params.append("end_date", filters.end_date);
-    params.append("only_numbers", "true");
+    // Convert selected columns to a comma-separated string
+    const cols = [];
+    if (selectedColumns.name) cols.push("name");
+    if (selectedColumns.email) cols.push("email");
+    if (selectedColumns.phone) cols.push("phone");
+    
+    // If none selected, default to all or handle gracefully
+    if (cols.length > 0) {
+      params.append("columns", cols.join(","));
+    }
     
     window.location.href = `/api/admin/export-csv?${params.toString()}`;
   };
@@ -186,38 +192,45 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, current
               onChange={(e) => setFilters({...filters, referred_by: e.target.value})}
             />
           </div>
-          <div className="flex flex-col gap-1 flex-grow">
-            <label className="text-[10px] uppercase font-bold text-secondary">Date Range</label>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <input 
-                type="date" 
-                className="flex-grow px-3 py-1.5 bg-dark border border-muted/20 rounded text-sm text-white focus:outline-none focus:border-primary w-full"
-                value={filters.start_date}
-                onChange={(e) => setFilters({...filters, start_date: e.target.value})}
-              />
-              <span className="hidden sm:inline text-secondary">-</span>
-              <input 
-                type="date" 
-                className="flex-grow px-3 py-1.5 bg-dark border border-muted/20 rounded text-sm text-white focus:outline-none focus:border-primary w-full"
-                value={filters.end_date}
-                onChange={(e) => setFilters({...filters, end_date: e.target.value})}
-              />
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] uppercase font-bold text-secondary">Columns</label>
+            <div className="flex items-center gap-3 bg-dark border border-muted/20 rounded px-3 py-1.5 h-10">
+              <label className="flex items-center gap-1.5 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedColumns.name}
+                  onChange={(e) => setSelectedColumns({...selectedColumns, name: e.target.checked})}
+                  className="w-3.5 h-3.5 rounded border-muted/30 bg-dark text-primary focus:ring-primary/20 accent-primary" 
+                />
+                <span className="text-[10px] font-bold text-secondary group-hover:text-white transition-colors">NAME</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedColumns.email}
+                  onChange={(e) => setSelectedColumns({...selectedColumns, email: e.target.checked})}
+                  className="w-3.5 h-3.5 rounded border-muted/30 bg-dark text-primary focus:ring-primary/20 accent-primary" 
+                />
+                <span className="text-[10px] font-bold text-secondary group-hover:text-white transition-colors">EMAIL</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedColumns.phone}
+                  onChange={(e) => setSelectedColumns({...selectedColumns, phone: e.target.checked})}
+                  className="w-3.5 h-3.5 rounded border-muted/30 bg-dark text-primary focus:ring-primary/20 accent-primary" 
+                />
+                <span className="text-[10px] font-bold text-secondary group-hover:text-white transition-colors">PHONE</span>
+              </label>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-2 sm:ml-auto w-full sm:w-auto">
             <button
-              onClick={handleExportNumbers}
-              className="flex items-center justify-center gap-2 px-4 py-1.5 bg-dark border border-muted/20 text-white text-xs font-bold uppercase tracking-wider rounded hover:bg-muted/10 transition-all h-10 flex-grow sm:flex-initial"
-            >
-              <Download className="w-3 h-3" />
-              Numbers Only
-            </button>
-            <button
               onClick={handleExportCSV}
-              className="flex items-center justify-center gap-2 px-4 py-1.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded shadow-lg shadow-primary/20 hover:brightness-110 transition-all h-10 flex-grow sm:flex-initial"
+              className="flex items-center justify-center gap-2 px-6 py-1.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded shadow-lg shadow-primary/20 hover:brightness-110 transition-all h-10 w-full sm:w-auto"
             >
-              <Download className="w-3 h-3" />
-              Full CSV
+              <Download className="w-3.5 h-3.5" />
+              Download Export
             </button>
           </div>
         </div>
