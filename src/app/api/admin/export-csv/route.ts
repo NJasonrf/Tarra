@@ -115,7 +115,7 @@ export async function GET(request: Request) {
     const row: string[] = [];
     if (isFullExport) {
         row.push(
-            user.full_name || "",
+            user.full_name ? `${user.full_name} TARRA` : "",
             user.email || "",
             user.phone_number || "",
             count.toString(),
@@ -125,7 +125,7 @@ export async function GET(request: Request) {
             user.created_at ? new Date(user.created_at).toISOString() : ""
         );
     } else {
-        if (requestedColumns.includes("name")) row.push(user.full_name || "");
+        if (requestedColumns.includes("name")) row.push(user.full_name ? `${user.full_name} TARRA` : "");
         if (requestedColumns.includes("email")) row.push(user.email || "");
         if (requestedColumns.includes("phone")) row.push(user.phone_number || "");
     }

@@ -55,7 +55,7 @@ export async function GET(request: Request) {
     // Rows generation with CSV escape logic
     const rows = data.map((user) => [
       user.id,
-      `"${user.full_name.replace(/"/g, '""')}"`,
+      `"${(user.full_name ? user.full_name + ' TARRA' : '').replace(/"/g, '""')}"`,
       user.email,
       `"${user.interests.join(", ").replace(/"/g, '""')}"`,
       user.referred_by || "",
