@@ -45,7 +45,7 @@ const ScreenshotShowcase: React.FC = () => {
   }, []);
 
   return (
-    <section className="relative py-16 md:py-24 bg-dark/20 border-y border-muted/5 overflow-hidden">
+    <section className="relative py-16 md:py-24 bg-dark/20 overflow-hidden">
       {/* Background Grid Pattern */}
       <div 
         className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
@@ -108,16 +108,6 @@ const ScreenshotShowcase: React.FC = () => {
               </div>
             );
           })}
-        </div>
-
-        {/* Navigation Indicators */}
-        <div className="flex justify-center gap-2 mt-4">
-          {screenshots.map((_, i) => (
-            <div 
-              key={i}
-              className={`h-1 rounded-full transition-all duration-300 ${activeIndex === i ? "w-8 bg-primary" : "w-2 bg-secondary/30"}`}
-            />
-          ))}
         </div>
       </div>
     </section>

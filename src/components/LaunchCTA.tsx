@@ -9,7 +9,7 @@ import { Smartphone } from "lucide-react";
  */
 const LaunchCTA: React.FC = () => {
   return (
-    <section className="py-24 md:py-40 bg-dark relative overflow-hidden border-t border-muted/5">
+    <section className="py-24 md:py-40 bg-dark relative overflow-hidden">
       {/* Background Grid Pattern */}
       <div 
         className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
