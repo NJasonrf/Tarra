@@ -24,12 +24,15 @@ const LaunchHero: React.FC = () => {
             </div>
 
             <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.1] mb-6 tracking-tight transition-colors">
-              Campus Commerce.<br />
-              <span className="text-primary">Redefined.</span>
+              OAU Commerce.<br />
+              <span className="text-primary">Without the Chaos.</span>
             </h1>
 
-            <p className="text-lg sm:text-xl md:text-2xl text-secondary font-medium mb-10 max-w-2xl transition-colors leading-relaxed">
-              Buy, sell, and discover verified campus-grown brands and services. All in one place.
+            <p className="text-base sm:text-xl md:text-2xl text-secondary font-medium mb-1 transition-colors leading-relaxed">
+              The verified marketplace. Join the waitlist for the
+            </p>
+            <p className="text-base sm:text-xl md:text-2xl font-black text-primary uppercase tracking-wider mb-10 transition-colors">
+              ₦300,000 CASH PRIZE POOL.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">

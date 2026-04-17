@@ -25,11 +25,11 @@ const SocialProof: React.FC = () => {
             <Users className="w-10 h-10 text-primary" />
           </div>
           
-          <h2 className="text-5xl sm:text-7xl md:text-8xl font-black text-white mb-6 tracking-tighter">
+          <h2 className="text-4xl sm:text-7xl md:text-8xl font-black text-white mb-6 tracking-tighter">
             2,500+
           </h2>
           
-          <p className="text-xl sm:text-2xl md:text-3xl text-secondary font-medium max-w-2xl leading-tight">
+          <p className="text-lg sm:text-2xl md:text-3xl text-secondary font-medium max-w-2xl leading-tight">
             OAU students already on the waitlist. 
             <span className="text-white"> Join the movement.</span>
           </p>
