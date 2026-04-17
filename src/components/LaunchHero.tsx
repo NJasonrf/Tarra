@@ -55,6 +55,16 @@ const LaunchHero: React.FC = () => {
         </div>
       </div>
       
+      {/* Background Grid Pattern */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
+        style={{ 
+          backgroundImage: 'url("/assets/bg.jpeg")',
+          backgroundSize: '400px 400px',
+          backgroundRepeat: 'repeat',
+        }}
+      />
+      
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none -z-10" />
     </section>

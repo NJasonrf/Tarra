@@ -8,8 +8,18 @@ import { Users } from "lucide-react";
  */
 const SocialProof: React.FC = () => {
   return (
-    <section className="py-20 md:py-32 bg-dark transition-colors">
-      <div className="container mx-auto px-6">
+    <section className="relative py-20 md:py-32 bg-dark transition-colors overflow-hidden">
+      {/* Background Grid Pattern */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
+        style={{ 
+          backgroundImage: 'url("/assets/bg.jpeg")',
+          backgroundSize: '400px 400px',
+          backgroundRepeat: 'repeat',
+        }}
+      />
+      
+      <div className="container relative z-10 mx-auto px-6">
         <div className="flex flex-col items-center text-center">
           <div className="w-20 h-20 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center mb-8">
             <Users className="w-10 h-10 text-primary" />

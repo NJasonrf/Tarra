@@ -10,6 +10,16 @@ import { Smartphone } from "lucide-react";
 const LaunchCTA: React.FC = () => {
   return (
     <section className="py-24 md:py-40 bg-dark relative overflow-hidden border-t border-muted/5">
+      {/* Background Grid Pattern */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
+        style={{ 
+          backgroundImage: 'url("/assets/bg.jpeg")',
+          backgroundSize: '400px 400px',
+          backgroundRepeat: 'repeat',
+        }}
+      />
+      
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col items-center text-center">
           <h2 className="text-4xl sm:text-6xl font-black text-white mb-8 tracking-tight">
