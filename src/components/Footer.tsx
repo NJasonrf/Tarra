@@ -26,6 +26,15 @@ export const Footer: React.FC = () => {
           <p className="text-xs text-secondary font-medium transition-colors">
             &copy; {new Date().getFullYear()} Built for OAU. All rights reserved.
           </p>
+          <div className="mt-2 flex justify-center">
+            <a 
+              href="/waitlist" 
+              className="text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/80 transition-all flex items-center gap-1 group"
+            >
+              Waitlist Contest 
+              <span className="text-xs group-hover:translate-x-1 transition-transform">→</span>
+            </a>
+          </div>
         </div>
       </div>
     </footer>
