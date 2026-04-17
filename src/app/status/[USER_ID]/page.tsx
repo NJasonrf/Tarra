@@ -72,44 +72,65 @@ export default async function StatusPage({
     
   const referralUrl = `${baseUrl}?ref=${user.referral_code}`;
 
+  // Calculate Rank
+  const userRank = (await Waitlist.countDocuments({ 
+    referral_count: { $gt: referralCount } 
+  })) + 1;
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar rightContent={<LogoutButton />} />
       <main className="flex-grow px-6 py-12 flex flex-col items-center transition-colors duration-300">
       <div className="w-full max-w-2xl">
         {/* Header Section */}
-        <header className="flex justify-between items-start mb-12">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              Hello, {firstName} 👋
-              <CheckCircle2 className="w-5 h-5 text-primary" strokeWidth={2.5} />
-            </h1>
-          </div>
+        <header className="flex flex-col mb-16">
+          <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white flex items-center gap-3 mb-3">
+            Hello, {firstName} 👋
+            <CheckCircle2 className="w-8 h-8 text-primary" strokeWidth={3} />
+          </h1>
+          <p className="text-xl font-bold text-secondary">
+            You are currently ranked <span className="text-primary font-black">#{userRank}</span>
+          </p>
         </header>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          <div className="p-6 border border-muted/10 rounded-lg shadow-xl transition-colors">
-            <h3 className="text-sm font-medium text-secondary mb-3">Referral Count</h3>
-            <p className="text-4xl font-black tracking-tight text-white transition-colors">
-              You have referred <span className="text-primary">{referralCount}</span> {referralCount === 1 ? "person" : "people"}.
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div className="p-8 bg-dark/40 border border-muted/10 rounded-2xl shadow-2xl backdrop-blur-sm transition-all hover:border-primary/20">
+            <h3 className="text-xs font-black text-secondary mb-4 uppercase tracking-[0.2em]">Total Invites</h3>
+            <p className="text-5xl font-black tracking-tight text-white transition-colors">
+              <span className="text-primary">{referralCount}</span> <span className="text-2xl text-secondary">{referralCount === 1 ? "person" : "people"}</span>
+            </p>
+          </div>
+          <div className="p-8 bg-dark/40 border border-muted/10 rounded-2xl shadow-2xl backdrop-blur-sm transition-all hover:border-primary/20">
+            <h3 className="text-xs font-black text-secondary mb-4 uppercase tracking-[0.2em]">Verified Users</h3>
+            <p className="text-5xl font-black tracking-tight text-white transition-colors">
+              <span className="text-primary">0</span> <span className="text-2xl text-secondary">people</span>
             </p>
           </div>
         </div>
 
+        <div className="w-full p-5 bg-primary/5 border border-primary/10 rounded-xl mb-16 shadow-inner">
+          <p className="text-xs leading-relaxed text-secondary/80 font-medium text-center italic">
+            “Your referrals become ‘Verified’ when they download the app during Welcome Month (April).”
+          </p>
+        </div>
+
         {/* Referral Link Section */}
-        <section className="mb-16">
-          <h2 className="text-lg font-bold text-white mb-4">Your Referral Link</h2>
+        <section className="mb-20">
+          <h2 className="text-xl font-black text-white mb-6 uppercase tracking-widest border-b border-muted/10 pb-4">Your Referral Link</h2>
           <CopyLinkButton referralUrl={referralUrl} />
-          <p className="mt-3 text-sm text-secondary transition-colors leading-relaxed">
-            Share this link to move up the leaderboard and win ₦50,000.
+          <p className="mt-4 text-base text-secondary transition-colors leading-relaxed">
+            Share this link to move up the leaderboard and win <span className="text-primary font-bold">₦300,000 CASH PRIZE POOL</span>.
           </p>
         </section>
 
         {/* Leaderboard Section */}
-        <section>
-          <h2 className="text-lg font-bold text-white mb-6">Top 10 recruiters</h2>
-          <Leaderboard />
+        <section className="mb-12">
+          <div className="flex flex-col mb-8 text-center sm:text-left">
+            <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tight">Leaderboard</h2>
+            <p className="text-secondary text-sm font-medium">Top recruiters on the platform</p>
+          </div>
+          <Leaderboard userRank={userRank} />
         </section>
       </div>
     </main>

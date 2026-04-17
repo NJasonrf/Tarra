@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Download } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Download, ArrowUpDown, Search, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import DrillDownTable from "./DrillDownTable";
 
 interface AdminUser {
@@ -10,6 +11,7 @@ interface AdminUser {
   email: string;
   phone_number: string;
   referral_code: string;
+  referred_by: string | null;
   referral_count: number;
   created_at: string;
   referrals: Array<{
@@ -24,13 +26,16 @@ interface AdminUser {
 interface DashboardMetrics {
   totalUsers: number;
   totalReferrals: number;
-  avgReferrals: string;
-  topRecruiterCount: number;
+  signupsToday: number;
+  signupsPrev: number;
+  referralsToday: number;
+  referralsPrev: number;
 }
 
 interface AdminDashboardProps {
   users: AdminUser[];
   metrics: DashboardMetrics;
+  currentSort: string;
 }
 
 /**
@@ -40,17 +45,16 @@ interface AdminDashboardProps {
  * 1. Ranking: High referral counts are surfaced immediately for audit.
  * 2. Drill-down: Clicking the count allows manual verification of referral quality.
  */
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics }) => {
+const SORT_LABELS: Record<string, string> = {
+  referrals_desc: "Highest Referrals",
+  referrals_asc:  "Lowest Referrals",
+  date_desc:      "Newest First",
+  date_asc:       "Oldest First",
+};
+
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics, currentSort }) => {
+  const router = useRouter();
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
-  
-  // Sorting state
-  const [sortConfig, setSortConfig] = useState<{
-    key: 'created_at' | 'referral_count';
-    direction: 'asc' | 'desc';
-  }>({
-    key: 'referral_count',
-    direction: 'desc'
-  });
   
   // State for optional filters (no complex UI controls)
   const [filters, setFilters] = useState({
@@ -60,36 +64,40 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics }) => {
     end_date: ""
   });
 
+  const [selectedColumns, setSelectedColumns] = useState({
+    name: true,
+    email: true,
+    phone: true
+  });
+
+  // Search state — filters client-side by name, email, or referral code
+  const [searchQuery, setSearchQuery] = useState("");
+
   const handleExportCSV = () => {
-    // Triggers the server-side CSV generation endpoint with filters
+    // Triggers the server-side CSV generation endpoint with filters and selected columns
     const params = new URLSearchParams();
     if (filters.min_referrals) params.append("min_referrals", filters.min_referrals);
     if (filters.referred_by) params.append("referred_by", filters.referred_by);
     if (filters.start_date) params.append("start_date", filters.start_date);
     if (filters.end_date) params.append("end_date", filters.end_date);
     
+    // Convert selected columns to a comma-separated string
+    const cols = [];
+    if (selectedColumns.name) cols.push("name");
+    if (selectedColumns.email) cols.push("email");
+    if (selectedColumns.phone) cols.push("phone");
+    
+    // If none selected, default to all or handle gracefully
+    if (cols.length > 0) {
+      params.append("columns", cols.join(","));
+    }
+    
     window.location.href = `/api/admin/export-csv?${params.toString()}`;
   };
 
-  const handleSort = (key: 'created_at' | 'referral_count') => {
-    let direction: 'asc' | 'desc' = 'desc';
-    if (sortConfig.key === key && sortConfig.direction === 'desc') {
-      direction = 'asc';
-    }
-    setSortConfig({ key, direction });
+  const handleSortChange = (value: string) => {
+    router.push(`/lighthouse?sort=${value}`);
   };
-
-  const sortedUsers = [...users].sort((a, b) => {
-    if (sortConfig.key === 'created_at') {
-      const dateA = new Date(a.created_at).getTime();
-      const dateB = new Date(b.created_at).getTime();
-      return sortConfig.direction === 'asc' ? dateA - dateB : dateB - dateA;
-    } else {
-      return sortConfig.direction === 'asc' 
-        ? a.referral_count - b.referral_count 
-        : b.referral_count - a.referral_count;
-    }
-  });
 
   return (
     <div className="w-full">
@@ -103,18 +111,63 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics }) => {
           <div className="text-2xl font-black text-primary">{metrics.totalReferrals.toLocaleString()}</div>
         </div>
         <div className="p-4 border border-muted/10 rounded-lg shadow-xl">
-          <div className="text-[10px] uppercase font-bold text-secondary tracking-wider mb-1">Avg. Referrals</div>
-          <div className="text-2xl font-black text-white">{metrics.avgReferrals}</div>
+          <div className="text-[10px] uppercase font-bold text-secondary tracking-wider mb-1">Signups Today</div>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-black text-white">{metrics.signupsToday}</span>
+            {metrics.signupsToday > metrics.signupsPrev ? (
+              <TrendingUp className="w-4 h-4 text-primary" />
+            ) : metrics.signupsToday < metrics.signupsPrev ? (
+              <TrendingDown className="w-4 h-4 text-secondary" />
+            ) : (
+              <Minus className="w-4 h-4 text-secondary/50" />
+            )}
+          </div>
         </div>
         <div className="p-4 border border-muted/10 rounded-lg shadow-xl">
-          <div className="text-[10px] uppercase font-bold text-secondary tracking-wider mb-1">Top Recruiter</div>
-          <div className="text-2xl font-black text-white">{metrics.topRecruiterCount}</div>
+          <div className="text-[10px] uppercase font-bold text-secondary tracking-wider mb-1">Referrals Today</div>
+          <div className="flex items-center gap-2">
+            <span className="text-2xl font-black text-primary">{metrics.referralsToday}</span>
+            {metrics.referralsToday > metrics.referralsPrev ? (
+              <TrendingUp className="w-4 h-4 text-primary" />
+            ) : metrics.referralsToday < metrics.referralsPrev ? (
+              <TrendingDown className="w-4 h-4 text-secondary" />
+            ) : (
+              <Minus className="w-4 h-4 text-secondary/50" />
+            )}
+          </div>
         </div>
       </div>
 
       <div className="mb-8 flex flex-col gap-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <h2 className="text-xl font-bold text-white transition-colors">Waitlist Master List</h2>
+          <div className="flex items-center gap-2">
+            <ArrowUpDown className="w-3.5 h-3.5 text-secondary" />
+            <select
+              value={currentSort}
+              onChange={(e) => handleSortChange(e.target.value)}
+              className="px-3 py-1.5 bg-dark border border-muted/20 rounded text-sm text-white focus:outline-none focus:border-primary appearance-none cursor-pointer pr-8"
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+            >
+              {Object.entries(SORT_LABELS).map(([value, label]) => (
+                <option key={value} value={value} className="bg-dark text-white">
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none" />
+          <input
+            type="text"
+            placeholder="Search by name, email, or referral code..."
+            className="w-full pl-10 pr-4 py-2.5 bg-dark border border-muted/20 rounded-lg text-sm text-white focus:outline-none focus:border-primary transition-colors placeholder:text-secondary/50"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
 
         {/* Filter Bar */}
@@ -130,40 +183,56 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics }) => {
             />
           </div>
           <div className="flex flex-col gap-1 sm:w-40">
-            <label className="text-[10px] uppercase font-bold text-secondary">Topic / Referrer Code</label>
+            <label className="text-[10px] uppercase font-bold text-secondary">Referrer Code</label>
             <input 
               type="text" 
-              placeholder="Filter by code..."
+              placeholder="Filter by source..."
               className="px-3 py-1.5 bg-dark border border-muted/20 rounded text-sm text-white focus:outline-none focus:border-primary w-full"
               value={filters.referred_by}
               onChange={(e) => setFilters({...filters, referred_by: e.target.value})}
             />
           </div>
-          <div className="flex flex-col gap-1 flex-grow">
-            <label className="text-[10px] uppercase font-bold text-secondary">Date Range</label>
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-              <input 
-                type="date" 
-                className="flex-grow px-3 py-1.5 bg-dark border border-muted/20 rounded text-sm text-white focus:outline-none focus:border-primary w-full"
-                value={filters.start_date}
-                onChange={(e) => setFilters({...filters, start_date: e.target.value})}
-              />
-              <span className="hidden sm:inline text-secondary">-</span>
-              <input 
-                type="date" 
-                className="flex-grow px-3 py-1.5 bg-dark border border-muted/20 rounded text-sm text-white focus:outline-none focus:border-primary w-full"
-                value={filters.end_date}
-                onChange={(e) => setFilters({...filters, end_date: e.target.value})}
-              />
+          <div className="flex flex-col gap-1">
+            <label className="text-[10px] uppercase font-bold text-secondary">Columns</label>
+            <div className="flex items-center gap-3 bg-dark border border-muted/20 rounded px-3 py-1.5 h-10">
+              <label className="flex items-center gap-1.5 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedColumns.name}
+                  onChange={(e) => setSelectedColumns({...selectedColumns, name: e.target.checked})}
+                  className="w-3.5 h-3.5 rounded border-muted/30 bg-dark text-primary focus:ring-primary/20 accent-primary" 
+                />
+                <span className="text-[10px] font-bold text-secondary group-hover:text-white transition-colors">NAME</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedColumns.email}
+                  onChange={(e) => setSelectedColumns({...selectedColumns, email: e.target.checked})}
+                  className="w-3.5 h-3.5 rounded border-muted/30 bg-dark text-primary focus:ring-primary/20 accent-primary" 
+                />
+                <span className="text-[10px] font-bold text-secondary group-hover:text-white transition-colors">EMAIL</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer group">
+                <input 
+                  type="checkbox" 
+                  checked={selectedColumns.phone}
+                  onChange={(e) => setSelectedColumns({...selectedColumns, phone: e.target.checked})}
+                  className="w-3.5 h-3.5 rounded border-muted/30 bg-dark text-primary focus:ring-primary/20 accent-primary" 
+                />
+                <span className="text-[10px] font-bold text-secondary group-hover:text-white transition-colors">PHONE</span>
+              </label>
             </div>
           </div>
-          <button
-            onClick={handleExportCSV}
-            className="flex items-center justify-center gap-2 px-4 py-1.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded shadow-lg shadow-primary/20 hover:brightness-110 sm:ml-auto transition-all h-10 w-full sm:w-auto"
-          >
-            <Download className="w-3 h-3" />
-            Download Filtered CSV
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2 sm:ml-auto w-full sm:w-auto">
+            <button
+              onClick={handleExportCSV}
+              className="flex items-center justify-center gap-2 px-6 py-1.5 bg-primary text-white text-xs font-bold uppercase tracking-wider rounded shadow-lg shadow-primary/20 hover:brightness-110 transition-all h-10 w-full sm:w-auto"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Download Export
+            </button>
+          </div>
         </div>
       </div>
 
@@ -172,33 +241,48 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics }) => {
           <table className="w-full text-left border-collapse min-w-[600px]">
             <thead className="bg-dark border-b border-muted/10">
               <tr>
-                <th 
-                  className="px-6 py-4 text-[10px] font-bold text-secondary uppercase tracking-widest transition-colors cursor-pointer hover:text-white"
-                  onClick={() => handleSort('created_at')}
-                >
-                  <div className="flex items-center gap-1">
-                    User Identity
-                    {sortConfig.key === 'created_at' && (
-                      <span className="text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </div>
-                </th>
+                <th className="px-6 py-4 text-[10px] font-bold text-secondary uppercase tracking-widest transition-colors">User Identity</th>
                 <th className="px-6 py-4 text-[10px] font-bold text-secondary uppercase tracking-widest transition-colors">Contact Details</th>
-                <th 
-                  className="px-6 py-4 text-[10px] font-bold text-secondary uppercase tracking-widest text-right transition-colors cursor-pointer hover:text-white"
-                  onClick={() => handleSort('referral_count')}
-                >
-                  <div className="flex items-center justify-end gap-1">
-                    {sortConfig.key === 'referral_count' && (
-                      <span className="text-primary">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                    Referral Growth
-                  </div>
-                </th>
+                <th className="px-6 py-4 text-[10px] font-bold text-secondary uppercase tracking-widest text-right transition-colors">Referral Growth</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-muted/5">
-              {sortedUsers.map((user) => (
+              {users
+                .filter((user) => {
+                  // 1. Search Query Filter
+                  if (searchQuery.trim()) {
+                    const q = searchQuery.toLowerCase();
+                    const matchesSearch = (
+                      user.full_name.toLowerCase().includes(q) ||
+                      user.email.toLowerCase().includes(q) ||
+                      user.referral_code.toLowerCase().includes(q)
+                    );
+                    if (!matchesSearch) return false;
+                  }
+
+                  // 2. Min Referrals Filter
+                  if (filters.min_referrals) {
+                    if (user.referral_count < parseInt(filters.min_referrals)) return false;
+                  }
+
+                  // 3. Referrer Code Filter
+                  if (filters.referred_by) {
+                    if (!user.referred_by?.toLowerCase().includes(filters.referred_by.toLowerCase())) return false;
+                  }
+
+                  // 4. Date Range Filter
+                  if (filters.start_date) {
+                    if (new Date(user.created_at) < new Date(filters.start_date)) return false;
+                  }
+                  if (filters.end_date) {
+                    const end = new Date(filters.end_date);
+                    end.setHours(23, 59, 59, 999);
+                    if (new Date(user.created_at) > end) return false;
+                  }
+
+                  return true;
+                })
+                .map((user) => (
                 <tr key={user.id} className="hover:bg-primary/5 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
@@ -210,7 +294,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ users, metrics }) => {
                        )}
                     </div>
                     <div className="flex flex-wrap gap-2 mt-1">
-                      <span className="text-[10px] text-secondary/50 font-mono transition-colors uppercase">ID: {user.id.slice(0, 8)}...</span>
+                      {user.referred_by && (
+                        <span className="text-[10px] text-secondary/50 font-mono transition-colors uppercase">Ref’d by: {user.referred_by}</span>
+                      )}
                       <span className="text-[10px] text-primary font-black tracking-tighter uppercase">Code: {user.referral_code}</span>
                       <span className="text-[10px] text-secondary font-medium uppercase tracking-tighter">Joined: {new Date(user.created_at).toLocaleDateString()} {new Date(user.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </div>

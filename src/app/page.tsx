@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import Features from "@/components/Features";
 import Leaderboard from "@/components/Leaderboard";
+import RulesSection from "@/components/RulesSection";
 import StatusCheck from "@/components/StatusCheck";
 import { LogoutButton } from "@/components/LogoutButton";
 
@@ -38,9 +39,12 @@ export default async function Home() {
   let userData = null;
   
   await dbConnect();
+  
+  // Global "Users Joined" Counter Logic:
+  // 1. Initial Social Proof Base: 500 (Hardcoded)
+  // 2. Incremental Growth: Only count real (non-ghost) users from the database.
   const realUserCount = await Waitlist.countDocuments({ is_ghost: { $ne: true } });
-  const baseCount = parseInt(process.env.NEXT_PUBLIC_WAITLIST_BASE_COUNT || "0", 10);
-  const totalJoined = realUserCount + baseCount;
+  const totalJoined = process.env.NEXT_PUBLIC_WAITLIST_BASE_COUNT ? parseInt(process.env.NEXT_PUBLIC_WAITLIST_BASE_COUNT) + realUserCount : realUserCount;
 
   if (session) {
     const user = await Waitlist.findOne({ id: session.value });
@@ -76,27 +80,29 @@ export default async function Home() {
         <Features />
         
         {/* Leaderboard and Status Recovery Section */}
-        <section id="leaderboard-section" className="py-6 sm:py-10 transition-colors scroll-mt-24 border-t border-muted/5">
+        <section id="leaderboard-section" className="pt-10 pb-10 sm:pt-16 sm:pb-12 transition-colors scroll-mt-24 border-t border-muted/5">
           <div className="container mx-auto px-6">
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-6 sm:mb-8">
-                <h2 className="text-3xl font-bold text-white mb-4 transition-colors">
+              <div className="text-center mb-12 sm:mb-16">
+                <h2 className="text-4xl sm:text-5xl font-black text-white mb-6 transition-colors tracking-tight">
                   Leaderboard
                 </h2>
-                <p className="text-secondary max-w-md mx-auto transition-colors leading-relaxed">
-                  Grow the community and win up to ₦50,000. Current top performers in the referral contest.
+                <p className="text-lg text-secondary max-w-2xl mx-auto transition-colors leading-relaxed">
+                  The top referrers competing for the prize.
                 </p>
               </div>
               
-              <Leaderboard />
+              <Leaderboard userRank={userData?.rank} />
               
               {/* Recovery Path for Students on Shared Devices */}
-              <div id="status-section" className="mt-8 sm:mt-12 scroll-mt-24">
+              <div id="status-section" className="mt-20 sm:mt-24 scroll-mt-24">
                 <StatusCheck />
               </div>
             </div>
           </div>
         </section>
+
+        <RulesSection />
       </main>
 
       <Footer />

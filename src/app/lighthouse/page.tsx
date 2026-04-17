@@ -17,7 +17,19 @@ import { LogoutButton } from "@/components/LogoutButton";
  * 1. Gateway: Checks for a valid "lighthouse_session" cookie.
  * 2. Audit Station: If authorized, renders the full AdminDashboard.
  */
-export default async function LighthousePage() {
+// Sort param mapping for server-side aggregation sorting
+const SORT_OPTIONS: Record<string, Record<string, 1 | -1>> = {
+  referrals_desc: { referral_count: -1, full_name: 1 },
+  referrals_asc:  { referral_count: 1, full_name: 1 },
+  date_desc:      { created_at: -1 },
+  date_asc:       { created_at: 1 },
+};
+
+export default async function LighthousePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ sort?: string }>;
+}) {
   const cookieStore = await cookies();
   const session = cookieStore.get("lighthouse_session");
 
@@ -26,9 +38,17 @@ export default async function LighthousePage() {
     return <PinGate />;
   }
 
+  // Read sort param from URL, default to highest referrals
+  const params = await searchParams;
+  const currentSort = (params.sort && params.sort in SORT_OPTIONS)
+    ? params.sort
+    : "referrals_desc";
+  const sortStage = SORT_OPTIONS[currentSort];
+
   await dbConnect();
 
   const users = await Waitlist.aggregate([
+    { $match: { is_ghost: { $ne: true } } },
     {
       $lookup: {
         from: "waitlists",
@@ -44,30 +64,19 @@ export default async function LighthousePage() {
         email: 1,
         phone_number: 1,
         referral_code: 1,
+        referred_by: 1,
         is_ghost: 1,
         created_at: 1,
-        // For real users, count actual children. For ghosts, use hardcoded count.
-        referral_count: {
-          $cond: {
-            if: { $eq: ["$is_ghost", true] },
-            then: { $ifNull: ["$referral_count", 0] },
-            else: { $size: "$referral_details" }
-          }
-        },
+        referral_count: { $size: "$referral_details" },
         // Fraud Detection Logic (Computed)
         isFlagged: {
           $cond: {
             if: {
-              $and: [
-                { $ne: ["$is_ghost", true] }, // Don't flag ghosts
-                {
-                  $or: [
-                    { $gt: [{ $size: "$referral_details" }, 20] }, // Volume threshold
-                    { 
-                       // Check for self-referral attempts (Name similarity check)
-                       $in: [ "$full_name", "$referral_details.full_name" ] 
-                    }
-                  ]
+              $or: [
+                { $gt: [{ $size: "$referral_details" }, 20] }, // Volume threshold
+                { 
+                   // Check for self-referral attempts (Name similarity check)
+                   $in: [ "$full_name", "$referral_details.full_name" ] 
                 }
               ]
             },
@@ -76,41 +85,50 @@ export default async function LighthousePage() {
           }
         },
         referrals: {
-          $cond: {
-            if: { $eq: ["$is_ghost", true] },
-            then: [], // Ghosts have no actual referral records
-            else: {
-              $map: {
-                input: "$referral_details",
-                as: "r",
-                in: {
-                  first_name: { $arrayElemAt: [{ $split: ["$$r.full_name", " "] }, 0] },
-                  phone_number: "$$r.phone_number",
-                  created_at: "$$r.created_at",
-                },
-              }
-            }
+          $map: {
+            input: "$referral_details",
+            as: "r",
+            in: {
+              first_name: { $arrayElemAt: [{ $split: ["$$r.full_name", " "] }, 0] },
+              phone_number: "$$r.phone_number",
+              created_at: "$$r.created_at",
+            },
           }
         },
       },
     },
-    { $sort: { referral_count: -1, full_name: 1 } },
+    { $sort: sortStage },
   ]);
 
   // Compute Metrics (Excluding Ghosts for clean operational data)
   const realUsers = users.filter((u: any) => !u.is_ghost);
   const totalUsers = realUsers.length;
   const totalReferrals = realUsers.reduce((acc: number, curr: any) => acc + (curr.referral_count || 0), 0);
-  const avgReferrals = totalUsers > 0 ? (totalReferrals / totalUsers).toFixed(1) : "0.0";
-  const topRecruiterCount = realUsers.length > 0 
-    ? Math.max(...realUsers.map((u: any) => u.referral_count)) 
-    : 0;
+
+  // Time-window metrics (efficient countDocuments — uses created_at index)
+  const now = new Date();
+  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+
+  // Today's signups (last 24h) and previous window (24–48h ago)
+  const [signupsToday, signupsPrev] = await Promise.all([
+    Waitlist.countDocuments({ is_ghost: { $ne: true }, created_at: { $gte: twentyFourHoursAgo } }),
+    Waitlist.countDocuments({ is_ghost: { $ne: true }, created_at: { $gte: fortyEightHoursAgo, $lt: twentyFourHoursAgo } }),
+  ]);
+
+  // Today's referrals (referred users who joined in last 24h)
+  const [referralsToday, referralsPrev] = await Promise.all([
+    Waitlist.countDocuments({ referred_by: { $ne: null }, created_at: { $gte: twentyFourHoursAgo } }),
+    Waitlist.countDocuments({ referred_by: { $ne: null }, created_at: { $gte: fortyEightHoursAgo, $lt: twentyFourHoursAgo } }),
+  ]);
 
   const metrics = {
     totalUsers,
     totalReferrals,
-    avgReferrals,
-    topRecruiterCount
+    signupsToday,
+    signupsPrev,
+    referralsToday,
+    referralsPrev,
   };
 
   return (
@@ -134,7 +152,7 @@ export default async function LighthousePage() {
           </div>
         </div>
         
-        <AdminDashboard users={JSON.parse(JSON.stringify(users))} metrics={metrics} />
+        <AdminDashboard users={JSON.parse(JSON.stringify(users))} metrics={metrics} currentSort={currentSort} />
       </div>
       <div className="w-full mt-auto">
         <Footer />

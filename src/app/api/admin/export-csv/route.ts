@@ -25,6 +25,11 @@ export async function GET(request: Request) {
   const filterReferrer = searchParams.get('referred_by');
   const startDate = searchParams.get('start_date');
   const endDate = searchParams.get('end_date');
+  const columnsParam = searchParams.get('columns');
+  
+  // If no columns specified, it's a "Full Audit" export
+  const requestedColumns = columnsParam ? columnsParam.split(',') : [];
+  const isFullExport = requestedColumns.length === 0;
 
   const cookieStore = await cookies();
   const session = cookieStore.get("lighthouse_session");
@@ -36,19 +41,7 @@ export async function GET(request: Request) {
 
   await dbConnect();
 
-  // 2. Data Aggregation
-  // Operational Intent: Launch teams use this to identify "Super Referrers" (min_referrals filter)
-  // for VIP onboarding or analyzing specific influencer campaigns (referred_by filter).
-  
-  const referralCounts = await Waitlist.aggregate([
-    { $match: { referred_by: { $ne: null } } },
-    { $group: { _id: "$referred_by", count: { $sum: 1 } } }
-  ]);
-
-  const countMap = new Map();
-  referralCounts.forEach(r => countMap.set(r._id, r.count));
-
-  // Build secure query object
+  // 2. Build secure query object
   const query: any = {};
   
   if (filterReferrer) {
@@ -66,44 +59,104 @@ export async function GET(request: Request) {
     }
   }
 
-  // Fetch filtered users
-  const users = await Waitlist.find(query).sort({ created_at: -1 }).lean();
+  // 3. Optimized Data Retrieval
+  const users = await Waitlist.aggregate([
+    { $match: { ...query, is_ghost: { $ne: true } } },
+    {
+      $lookup: {
+        from: "waitlists",
+        localField: "referral_code",
+        foreignField: "referred_by",
+        as: "referral_details",
+      },
+    },
+    {
+      $addFields: {
+        referral_count: { $size: "$referral_details" }
+      }
+    },
+    // Only perform the deep join if we need the full audit data
+    ...(isFullExport ? [
+      {
+        $lookup: {
+          from: "waitlists",
+          localField: "referred_by",
+          foreignField: "referral_code",
+          as: "referrer_data"
+        }
+      },
+      {
+        $addFields: {
+          referrer_email: { $arrayElemAt: ["$referrer_data.email", 0] }
+        }
+      }
+    ] : []),
+    { $sort: { created_at: -1 } }
+  ]);
 
-  // 3. CSV Generation
-  const headers = ["full_name,email,phone_number,referral_count,referred_by,created_at"];
-  
+  // 4. Dynamic CSV Formatting logic
+  const csvHeaders: string[] = [];
+  if (isFullExport) {
+    csvHeaders.push("Full Name", "Email Address", "Phone Number", "Referral Count", "Own Referral Code", "Actually Referred By", "Referrer Email", "Joined At");
+  } else {
+    if (requestedColumns.includes("name")) csvHeaders.push("Full Name");
+    if (requestedColumns.includes("email")) csvHeaders.push("Email Address");
+    if (requestedColumns.includes("phone")) csvHeaders.push("Phone Number");
+  }
+
   const csvRows: string[] = [];
 
   for (const user of users) {
-    // Application-side Filtering for computed values
-    const count = countMap.get(user.referral_code) || 0;
+    const count = user.referral_count || 0;
     
-    if (count < minReferrals) {
-      continue;
+    // Server-side filtering for min referrals
+    if (count < minReferrals) continue;
+
+    const row: string[] = [];
+    if (isFullExport) {
+        row.push(
+            user.full_name ? `${user.full_name} TARRA` : "",
+            user.email || "",
+            user.phone_number || "",
+            count.toString(),
+            user.referral_code || "",
+            user.referred_by || "DIRECT",
+            user.referrer_email || "N/A",
+            user.created_at ? new Date(user.created_at).toISOString() : ""
+        );
+    } else {
+        if (requestedColumns.includes("name")) row.push(user.full_name ? `${user.full_name} TARRA` : "");
+        if (requestedColumns.includes("email")) row.push(user.email || "");
+        if (requestedColumns.includes("phone")) row.push(user.phone_number || "");
     }
 
-    const cleanName = user.full_name?.replace(/"/g, '""') || "";
-    const cleanEmail = user.email || "";
-    const cleanPhone = user.phone_number || ""; 
-    const referredBy = user.referred_by || "";
-    const createdAt = user.created_at ? new Date(user.created_at).toISOString() : "";
+    // Escape and quote each field
+    const escapedRow = row.map(field => {
+      const escaped = String(field).replace(/"/g, '""');
+      return `"${escaped}"`;
+    });
 
-    csvRows.push(
-      `"${cleanName}","${cleanEmail}","${cleanPhone}",${count},"${referredBy}","${createdAt}"`
-    );
+    csvRows.push(escapedRow.join(","));
   }
 
-  const csvContent = headers.concat(csvRows).join("\n");
+  const csvContent = [
+    "sep=,",
+    csvHeaders.join(","),
+    ...csvRows
+  ].join("\n");
   
-  // Add Byte Order Mark (BOM) for Excel UTF-8 compatibility
-  // This tells Excel to interpret the file as UTF-8 immediately
   const bom = "\uFEFF";
   const finalCsv = bom + csvContent;
+
+  const timestamp = new Date().toISOString().split('T')[0];
+  const filename = isFullExport 
+    ? `tarra_full_audit_${timestamp}.csv`
+    : `tarra_custom_export_${timestamp}.csv`;
 
   return new NextResponse(finalCsv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="tarra_waitlist_export_${new Date().toISOString().split('T')[0]}.csv"`,
+      "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
 }
