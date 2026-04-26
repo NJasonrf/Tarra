@@ -1,47 +1,63 @@
 import React from "react";
 import Link from "next/link";
-import { Smartphone } from "lucide-react";
+import { Apple, Play } from "lucide-react";
 
 /**
  * LaunchCTA Component
  * 
- * Final call to action at the bottom of the page.
+ * Final download CTA at the bottom of the page.
+ * Clean design with download buttons matching the hero.
  */
 const LaunchCTA: React.FC = () => {
   return (
-    <section className="py-24 md:py-40 bg-dark relative overflow-hidden">
-      {/* Background Grid Pattern */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
-        style={{ 
-          backgroundImage: 'url("/assets/bg.jpeg")',
-          backgroundSize: '400px 400px',
-          backgroundRepeat: 'repeat',
-        }}
-      />
-      
+    <section className="py-24 md:py-36 bg-white dark:bg-[#0d1117] relative overflow-hidden transition-colors">
+      {/* Top divider */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-white/5 to-transparent" />
+
       <div className="container mx-auto px-6 relative z-10">
         <div className="flex flex-col items-center text-center">
-          <h2 className="text-4xl sm:text-6xl font-black text-white mb-8 tracking-tight">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
             Ready to trade?
           </h2>
           
-          <Link
-            href="#" // TODO: Add app store link
-            className="flex items-center justify-center gap-3 bg-primary hover:bg-primary/90 text-white font-black py-5 px-10 rounded-2xl text-lg transition-all hover:scale-[1.05] active:scale-[0.95] shadow-2xl shadow-primary/30 mb-8"
-          >
-            <Smartphone className="w-6 h-6" />
-            Download Tarra Now
-          </Link>
+          <p className="text-lg text-gray-500 dark:text-gray-400 font-medium mb-10 max-w-md">
+            Download Tarra and start buying, selling, or offering services on campus.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <Link
+              href="#"
+              id="cta-bottom-app-store"
+              className="flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
+            >
+              <Apple className="w-6 h-6" />
+              <div className="flex flex-col items-start leading-tight">
+                <span className="text-[10px] font-medium opacity-80 uppercase tracking-wider">Download on the</span>
+                <span className="text-base font-bold -mt-0.5">App Store</span>
+              </div>
+            </Link>
+
+            <Link
+              href="#"
+              id="cta-bottom-google-play"
+              className="flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
+            >
+              <Play className="w-6 h-6 fill-current" />
+              <div className="flex flex-col items-start leading-tight">
+                <span className="text-[10px] font-medium opacity-80 uppercase tracking-wider">Get it on</span>
+                <span className="text-base font-bold -mt-0.5">Google Play</span>
+              </div>
+            </Link>
+          </div>
           
-          <p className="text-secondary font-bold uppercase tracking-[0.3em] text-sm">
+          <p className="mt-10 text-gray-400 dark:text-gray-500 font-bold uppercase tracking-[0.25em] text-xs">
             OAU Commerce. Without the Chaos.
           </p>
         </div>
       </div>
-      
-      {/* Background Decorative Element */}
-      <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-primary/5 to-transparent pointer-events-none" />
+
+      {/* Background glow */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-[#00c6a7]/5 rounded-full blur-[120px] pointer-events-none" />
     </section>
   );
 };

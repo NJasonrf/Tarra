@@ -8,21 +8,28 @@
   }
 
   :root {
-    --background: #0F172A;
-    --foreground: #FFFFFF;
+    --background: #ffffff;
+    --foreground: #111827;
     
-    /* Tarra Brand Palette - Exact Hex Values */
-    --primary: #0FB9B1;
+    /* Tarra Brand Palette */
+    --primary: #00c6a7;
     --primary-foreground: #ffffff;
-    --secondary: #64748B;
-    --muted: #E5E7EB;
+    --secondary: #6b7280;
+    --muted: #e5e7eb;
 
     --font-display: 'Satoshi', var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
     --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   }
 
+  .dark {
+    --background: #0d1117;
+    --foreground: #ffffff;
+    --secondary: #9ca3af;
+    --muted: #1f2937;
+  }
+
   body {
-    @apply antialiased min-h-screen transition-colors duration-200 bg-dark;
+    @apply antialiased min-h-screen transition-colors duration-200;
     color: var(--foreground);
     background-color: var(--background);
     font-family: var(--font-sans);
@@ -34,7 +41,6 @@
 }
 
 @layer utilities {
-  /* Pattern container is handled in layout.tsx */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

@@ -1,38 +1,63 @@
 import React from "react";
-import { Users } from "lucide-react";
+import { UserCheck, FileText } from "lucide-react";
 
 /**
  * SocialProof Component
  * 
- * Highlighting the community size.
+ * "One Account. Everything." section with Students and Brands cards.
+ * Matches the reference design with adaptive dark/light mode.
  */
 const SocialProof: React.FC = () => {
+  const accounts = [
+    {
+      title: "Students",
+      description: "Sell textbooks, electronics, clothing. Offer tutoring, design, and more.",
+      icon: <UserCheck className="w-6 h-6" />,
+    },
+    {
+      title: "Brands",
+      description: "Get a storefront with analytics. Still buy and receive services.",
+      icon: <FileText className="w-6 h-6" />,
+    },
+  ];
+
   return (
-    <section className="relative py-20 md:py-32 bg-dark transition-colors overflow-hidden">
-      {/* Background Grid Pattern */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
-        style={{ 
-          backgroundImage: 'url("/assets/bg.jpeg")',
-          backgroundSize: '400px 400px',
-          backgroundRepeat: 'repeat',
-        }}
-      />
-      
+    <section className="py-20 md:py-32 bg-white dark:bg-[#0d1117] transition-colors">
+      {/* Top divider */}
+      <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-white/5 to-transparent mb-16 md:mb-24" />
+
       <div className="container relative z-10 mx-auto px-6">
-        <div className="flex flex-col items-center text-center">
-          <div className="w-20 h-20 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center mb-8">
-            <Users className="w-10 h-10 text-primary" />
-          </div>
-          
-          <h2 className="text-4xl sm:text-7xl md:text-8xl font-black text-white mb-6 tracking-tighter">
-            2,500+
+        <div className="text-center mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-5">
+            One Account. Everything.
           </h2>
-          
-          <p className="text-lg sm:text-2xl md:text-3xl text-secondary font-medium max-w-2xl leading-tight">
-            OAU students already on the waitlist. 
-            <span className="text-white"> Join the movement.</span>
+          <p className="text-lg text-gray-500 dark:text-gray-400 font-medium max-w-2xl mx-auto">
+            Sell products, offer services, or run a brand. All from one account.
           </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          {accounts.map((account) => (
+            <div
+              key={account.title}
+              className="group p-8 md:p-10 rounded-2xl border border-gray-200 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.02] hover:border-[#00c6a7]/30 dark:hover:border-[#00c6a7]/20 transition-all duration-300"
+            >
+              {/* Icon */}
+              <div className="w-12 h-12 bg-[#00c6a7] rounded-xl flex items-center justify-center mb-6 text-white shadow-lg shadow-[#00c6a7]/20 group-hover:shadow-[#00c6a7]/40 transition-shadow">
+                {account.icon}
+              </div>
+
+              {/* Title */}
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 tracking-tight">
+                {account.title}
+              </h3>
+
+              {/* Description */}
+              <p className="text-base text-gray-500 dark:text-gray-400 leading-relaxed">
+                {account.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,75 +1,69 @@
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Smartphone } from "lucide-react";
+import { Apple, Play } from "lucide-react";
 
 /**
  * LaunchHero Component
  * 
- * Announcement-style hero section for the live product.
+ * Clean hero section with social proof line, main heading,
+ * subtext, and App Store / Google Play CTA buttons.
+ * Fully responsive with dark/light mode support.
  */
 const LaunchHero: React.FC = () => {
   return (
-    <section className="relative w-full pt-12 pb-16 md:pt-20 md:pb-28 overflow-hidden transition-colors">
+    <section className="relative w-full pt-20 pb-24 md:pt-32 md:pb-40 overflow-hidden transition-colors bg-white dark:bg-[#0d1117]">
       <div className="container relative z-10 mx-auto px-6">
         <div className="flex flex-col items-center text-center">
           <div className="flex flex-col items-center max-w-4xl">
-            {/* Launch Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] sm:text-xs font-black uppercase tracking-widest mb-8 animate-fade-in">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-              </span>
-              Now Live at OAU
-            </div>
+            {/* Social Proof Line */}
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium mb-8 tracking-wide">
+              Trusted by{" "}
+              <span className="text-[#00c6a7] font-bold">2,500+ OAU students</span>
+            </p>
 
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-black text-white leading-[1.1] mb-6 tracking-tight transition-colors">
+            {/* Main Heading */}
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-gray-900 dark:text-white leading-[1.05] mb-8 tracking-tight transition-colors">
               OAU Commerce.<br />
-              <span className="text-primary">Without the Chaos.</span>
+              Without the Chaos.
             </h1>
 
-            <p className="text-base sm:text-xl md:text-2xl text-secondary font-medium mb-1 transition-colors leading-relaxed">
-              The verified marketplace. Join the waitlist for the
-            </p>
-            <p className="text-base sm:text-xl md:text-2xl font-black text-primary uppercase tracking-wider mb-10 transition-colors">
-              ₦300,000 CASH PRIZE POOL.
+            {/* Subtext */}
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-medium mb-14 max-w-2xl transition-colors leading-relaxed">
+              Buy, sell, and offer services. All in one account.
             </p>
 
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <Link
-                href="#" // TODO: Add app store link
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-white font-black py-4 px-8 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
+                href="#"
+                id="cta-app-store"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
               >
-                <Smartphone className="w-5 h-5" />
-                Download the App
+                <Apple className="w-6 h-6" />
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-[10px] font-medium opacity-80 uppercase tracking-wider">Download on the</span>
+                  <span className="text-base font-bold -mt-0.5">App Store</span>
+                </div>
               </Link>
-              
+
               <Link
-                href="/waitlist"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 bg-dark/40 hover:bg-dark/60 border border-muted/10 text-white font-bold py-4 px-8 rounded-xl transition-all"
+                href="#"
+                id="cta-google-play"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
               >
-                Already on the waitlist? 
-                <span className="flex items-center gap-1 text-primary">
-                  Check status <ArrowRight className="w-4 h-4" />
-                </span>
+                <Play className="w-6 h-6 fill-current" />
+                <div className="flex flex-col items-start leading-tight">
+                  <span className="text-[10px] font-medium opacity-80 uppercase tracking-wider">Get it on</span>
+                  <span className="text-base font-bold -mt-0.5">Google Play</span>
+                </div>
               </Link>
             </div>
           </div>
         </div>
       </div>
-      
-      {/* Background Grid Pattern */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
-        style={{ 
-          backgroundImage: 'url("/assets/bg.jpeg")',
-          backgroundSize: '400px 400px',
-          backgroundRepeat: 'repeat',
-        }}
-      />
-      
-      {/* Background Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+
+      {/* Subtle background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00c6a7]/5 dark:bg-[#00c6a7]/8 rounded-full blur-[150px] pointer-events-none" />
     </section>
   );
 };

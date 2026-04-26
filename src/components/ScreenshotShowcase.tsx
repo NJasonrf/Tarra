@@ -1,113 +1,63 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import React from "react";
+import { Smartphone } from "lucide-react";
 
 /**
  * ScreenshotShowcase Component
  * 
- * Premium Slider with a center-focused (bold) effect.
- * Uses IntersectionObserver to detect the centered image and applies
- * scaling and opacity transitions.
+ * "See Tarra in Action" section with horizontally scrollable
+ * app screen cards, each with a gradient background and label.
+ * Adaptive colors for dark/light mode.
  */
 const ScreenshotShowcase: React.FC = () => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(2); // Start with center item (3rd)
-
-  const screenshots = [
-    { src: "/assets/screenshots/screenshot-1.png", alt: "Marketplace View" },
-    { src: "/assets/screenshots/screenshot-2.png", alt: "Product Details" },
-    { src: "/assets/screenshots/screenshot-3.png", alt: "Brand Profile" },
-    { src: "/assets/screenshots/screenshot-4.png", alt: "Services Booking" },
-    { src: "/assets/screenshots/screenshot-5.png", alt: "User Account" },
+  const screens = [
+    { label: "Browse", darkGradient: "from-teal-700 to-teal-900", lightGradient: "from-indigo-100 to-purple-100" },
+    { label: "Sell", darkGradient: "from-amber-700 to-orange-900", lightGradient: "from-green-100 to-emerald-100" },
+    { label: "Services", darkGradient: "from-purple-700 to-violet-900", lightGradient: "from-orange-100 to-amber-100" },
+    { label: "Chat", darkGradient: "from-cyan-700 to-blue-900", lightGradient: "from-pink-100 to-rose-100" },
+    { label: "Analytics", darkGradient: "from-emerald-700 to-green-900", lightGradient: "from-cyan-100 to-sky-100" },
   ];
 
-  useEffect(() => {
-    const observerOptions = {
-      root: containerRef.current,
-      threshold: 0.6, // Higher threshold ensures only the center-most item is "active"
-      rootMargin: "0px -25% 0px -25%", // Narrow the observation area to the center
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const index = parseInt(entry.target.getAttribute("data-index") || "0", 10);
-          setActiveIndex(index);
-        }
-      });
-    }, observerOptions);
-
-    const items = containerRef.current?.querySelectorAll(".screenshot-item");
-    items?.forEach((item) => observer.observe(item));
-
-    return () => items?.forEach((item) => observer.unobserve(item));
-  }, []);
-
   return (
-    <section className="relative py-16 md:py-24 bg-dark/20 overflow-hidden">
-      {/* Background Grid Pattern */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
-        style={{ 
-          backgroundImage: 'url("/assets/bg.jpeg")',
-          backgroundSize: '400px 400px',
-          backgroundRepeat: 'repeat',
-        }}
-      />
+    <section className="relative py-16 md:py-24 bg-white dark:bg-[#0d1117] overflow-hidden transition-colors">
+      {/* Subtle top border */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-white/5 to-transparent" />
 
       <div className="container relative z-10 mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-black text-white mb-4 tracking-tight">
-            Designed for <span className="text-primary">OAU Students.</span>
+        <div className="text-center mb-14">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
+            See Tarra in Action
           </h2>
-          <p className="text-secondary text-lg max-w-2xl mx-auto">
-            A seamless experience built specifically for the campus life.
-          </p>
         </div>
 
-        {/* Slider Container */}
-        <div 
-          ref={containerRef}
-          className="flex flex-nowrap md:gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-12 pt-10 px-[10%] md:px-[35%]"
-          style={{ scrollPadding: "0 25%" }}
-        >
-          {screenshots.map((item, index) => {
-            const isActive = activeIndex === index;
-            
-            return (
-              <div 
-                key={index}
-                data-index={index}
-                className={`screenshot-item flex-shrink-0 w-64 md:w-80 snap-center transition-all duration-700 ease-out transform
-                  ${isActive ? "scale-110 md:scale-125 opacity-100 z-20" : "scale-90 opacity-40 blur-[2px] md:blur-none z-10"}
-                `}
-              >
-                <div className={`relative aspect-[9/19] rounded-[2.5rem] p-3 bg-dark/80 border transition-all duration-700
-                  ${isActive ? "border-transparent" : "border-transparent opacity-50"}
-                  overflow-hidden group
-                `}>
-                  {/* Screen Content */}
-                  <div className="relative w-full h-full rounded-[2rem] overflow-hidden bg-dark">
-                    <Image
-                      src={item.src}
-                      alt={item.alt}
-                      fill
-                      className="object-cover"
-                      sizes="(max-w-768px) 256px, 320px"
-                    />
-                    
-                    <div className="absolute inset-0 flex items-center justify-center bg-dark/80 text-secondary text-[10px] font-bold p-4 text-center z-[-1]">
-                      Screenshot Placeholder
-                    </div>
-                  </div>
-                  
-                  {/* Shine Effect */}
-                  <div className="absolute inset-0 bg-gradient-to-tr from-white/10 to-transparent pointer-events-none opacity-50" />
+        {/* Horizontal Scroll Cards */}
+        <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 -mx-6 px-6">
+          {screens.map((screen, index) => (
+            <div
+              key={index}
+              className="flex-shrink-0 w-64 sm:w-72 md:w-80 snap-center group"
+            >
+              <div className={`relative aspect-[3/4] rounded-3xl overflow-hidden border border-gray-200 dark:border-white/5 transition-all duration-500 group-hover:border-gray-300 dark:group-hover:border-white/10 group-hover:scale-[1.02]`}>
+                {/* Gradient Background — dark mode */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${screen.darkGradient} hidden dark:block`} />
+                {/* Gradient Background — light mode */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${screen.lightGradient} dark:hidden`} />
+                
+                {/* Icon */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-20 dark:opacity-30">
+                  <Smartphone className="w-20 h-20 text-gray-900 dark:text-white" />
+                </div>
+
+                {/* Label */}
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <span className="text-lg font-bold text-gray-900 dark:text-white">
+                    {screen.label}
+                  </span>
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
     </section>
