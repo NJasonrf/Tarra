@@ -150,7 +150,7 @@ export default function DashboardPage() {
         <nav>
           <div className="container mx-auto px-6 py-3 flex justify-between items-center">
             <Link href="/" className="flex items-center gap-1 hover:opacity-90 group">
-              <Image src="/assets/favicon_nobg.png" alt="Tarra Logo" width={36} height={36} className="w-9 h-9 object-contain" />
+              <Image src="/assets/favicon_nobg.png" alt="Tarra Logo" width={44} height={44} className="w-11 h-11 object-contain" />
               <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Tarra</span>
             </Link>
             <div className="flex items-center gap-3">
