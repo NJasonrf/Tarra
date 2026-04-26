@@ -384,7 +384,7 @@ function StatCard({ icon, value, label }: { icon: React.ReactNode; value: number
 
 function ReferralLinkBlock({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
-  const url = `https://tarra.ng/waitlist?ref=${code}`;
+  const url = `https://tarra.ng?ref=${code}`;
   const shareText = `Join me on Tarra — OAU's campus marketplace! Use my code ${code} to get started: ${url}`;
 
   const handleCopy = async () => {
