@@ -145,10 +145,6 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0d1117] text-gray-900 dark:text-white relative overflow-hidden transition-colors">
-      {/* Grid background */}
-      <div className="absolute inset-0 bg-grid pointer-events-none" />
-      {/* Radial fade */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,var(--background)_100%)] pointer-events-none" />
       {/* Teal glow — top */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#00c6a7]/5 dark:bg-[#00c6a7]/[0.07] rounded-full blur-[180px] pointer-events-none" />
 

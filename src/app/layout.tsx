@@ -115,6 +115,9 @@ export default function RootLayout({
             }),
           }}
         />
+        {/* Global grid background */}
+        <div className="fixed inset-0 bg-grid pointer-events-none z-0" />
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,var(--background)_100%)] pointer-events-none z-0" />
         <div className="relative z-10 min-h-screen flex flex-col">
           <Providers>
             {children}
