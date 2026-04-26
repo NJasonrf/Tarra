@@ -79,7 +79,7 @@ export default async function StatusPage({
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar rightContent={<LogoutButton />} />
+      <Navbar />
       <main className="flex-grow px-6 py-12 flex flex-col items-center transition-colors duration-300">
       <div className="w-full max-w-2xl">
         {/* Header Section */}
