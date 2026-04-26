@@ -19,15 +19,10 @@ import {
   Play,
   Sun,
   Moon,
+  TrendingUp,
 } from "lucide-react";
 
 /* ─────────────────────── Types ─────────────────────── */
-
-interface LeaderboardEntry {
-  full_name: string;
-  referral_code: string;
-  referral_count: number;
-}
 
 interface DashboardData {
   found: boolean;
@@ -36,7 +31,8 @@ interface DashboardData {
   waitlistReferralCount: number;
   verifiedReferralCount: number;
   isWaitlistUser: boolean;
-  leaderboard: LeaderboardEntry[];
+  rank: number;
+  totalOnLeaderboard: number;
   error?: string;
 }
 
@@ -187,7 +183,7 @@ export default function DashboardPage() {
                   <Trophy className="w-8 h-8 text-[#00c6a7]" />
                 </div>
                 <h1 className="text-4xl sm:text-5xl font-medium text-gray-900 dark:text-white tracking-tight mb-4">
-                  Referral Dashboard
+                  User Dashboard
                 </h1>
                 <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base font-medium max-w-xs mx-auto leading-relaxed">
                   Enter your referral code to view your stats and leaderboard position.
@@ -258,6 +254,11 @@ export default function DashboardPage() {
             {/* Referral Code Block */}
             <ReferralCodeBlock code={data.referralCode} />
 
+            {/* Rank Display */}
+            <div className="mb-8">
+              <RankCard rank={data.rank} totalOnLeaderboard={data.totalOnLeaderboard} />
+            </div>
+
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-4 sm:gap-5 mb-8">
               <StatCard
@@ -274,16 +275,6 @@ export default function DashboardPage() {
 
             {/* Referral Link + Share */}
             <ReferralLinkBlock code={data.referralCode} />
-
-            {/* Leaderboard */}
-            <div className="mt-14">
-              <div className="flex items-center gap-2 mb-6">
-                <Crown className="w-5 h-5 text-[#00c6a7]" />
-                <h2 className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white tracking-tight">Leaderboard</h2>
-                <span className="text-xs text-gray-500 font-medium ml-auto">Top 10</span>
-              </div>
-              <DashboardLeaderboard entries={data.leaderboard} currentCode={data.referralCode} />
-            </div>
 
             {/* Download CTA */}
             <DownloadCTA />
@@ -334,6 +325,47 @@ function ReferralCodeBlock({ code }: { code: string }) {
           )}
         </span>
       </button>
+    </div>
+  );
+}
+
+function RankCard({ rank, totalOnLeaderboard }: { rank: number; totalOnLeaderboard: number }) {
+  const isRanked = rank > 0;
+
+  return (
+    <div className={`p-6 sm:p-8 rounded-2xl border transition-all ${
+      isRanked 
+        ? "bg-[#00c6a7]/5 border-[#00c6a7]/20 dark:bg-[#00c6a7]/10 dark:border-[#00c6a7]/30" 
+        : "bg-gray-50 dark:bg-[#1a2235] border-gray-200 dark:border-white/[0.08]"
+    }`}>
+      <div className="flex items-center gap-4">
+        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+          isRanked ? "bg-[#00c6a7] text-white" : "bg-gray-200 dark:bg-white/10 text-gray-400"
+        }`}>
+          {isRanked ? <Trophy className="w-6 h-6" /> : <TrendingUp className="w-6 h-6" />}
+        </div>
+        <div className="flex-grow">
+          {isRanked ? (
+            <>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
+                You&apos;re ranked <span className="text-[#00c6a7]">#{rank}</span>
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                Based on verified app signups
+              </p>
+            </>
+          ) : (
+            <>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white tracking-tight">
+                Not ranked yet
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
+                Invite people to join the app to earn your spot
+              </p>
+            </>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -407,76 +439,6 @@ function ReferralLinkBlock({ code }: { code: string }) {
         <p className="text-[10px] font-bold text-[#00c6a7] uppercase tracking-[0.15em] mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
           ✨ Link copied to clipboard
         </p>
-      )}
-    </div>
-  );
-}
-
-function DashboardLeaderboard({ entries, currentCode }: { entries: LeaderboardEntry[]; currentCode: string }) {
-  if (!entries.length) {
-    return (
-      <div className="text-center py-16 text-gray-500 text-sm font-medium border border-gray-200 dark:border-white/[0.06] rounded-2xl bg-gray-50/50 dark:bg-white/[0.02]">
-        The leaderboard is empty. Be the first to refer!
-      </div>
-    );
-  }
-
-  const currentRank = entries.findIndex((e) => e.referral_code === currentCode);
-
-  return (
-    <div className="border border-gray-200 dark:border-white/[0.06] rounded-2xl overflow-hidden bg-white dark:bg-[#1a2235]/50">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse min-w-[320px]">
-          <thead>
-            <tr className="border-b border-gray-200 dark:border-white/[0.06]">
-              <th className="px-5 py-4 text-[10px] font-black text-[#00c6a7] uppercase tracking-[0.3em] w-16">Rank</th>
-              <th className="px-5 py-4 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em]">Name</th>
-              <th className="px-5 py-4 text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-[0.3em] text-right">Referrals</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 dark:divide-white/[0.03]">
-            {entries.map((entry, i) => {
-              const isMe = entry.referral_code === currentCode;
-              const firstName = entry.full_name.split(" ")[0];
-              return (
-                <tr
-                  key={entry.referral_code}
-                  className={`transition-all ${isMe ? "bg-[#00c6a7]/[0.06]" : "hover:bg-gray-50 dark:hover:bg-white/[0.02]"}`}
-                >
-                  <td className="px-5 py-3.5">
-                    <span className={`text-sm font-black ${i < 3 ? "text-[#00c6a7]" : "text-gray-400 dark:text-gray-500"}`}>
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <div className="flex items-center gap-2">
-                      <span className={`text-sm font-bold ${isMe ? "text-[#00c6a7]" : "text-gray-900 dark:text-white/90"}`}>{firstName}</span>
-                      {isMe && (
-                        <span className="text-[9px] font-black bg-[#00c6a7]/15 text-[#00c6a7] px-2 py-0.5 rounded-full uppercase tracking-wider">You</span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-5 py-3.5 text-right">
-                    <span className="text-sm font-black text-[#00c6a7] tabular-nums">{entry.referral_count}</span>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {currentRank >= 0 && (
-        <div className="px-5 py-4 border-t border-[#00c6a7]/20 bg-[#00c6a7]/[0.06] text-center">
-          <p className="text-sm font-bold text-gray-900 dark:text-white">
-            You are ranked <span className="text-[#00c6a7] font-black text-lg">#{currentRank + 1}</span>
-          </p>
-        </div>
-      )}
-      {currentRank < 0 && (
-        <div className="px-5 py-4 border-t border-gray-100 dark:border-white/[0.04] text-center">
-          <p className="text-xs text-gray-500 font-medium">You&apos;re not in the top 10 yet. Keep referring!</p>
-        </div>
       )}
     </div>
   );

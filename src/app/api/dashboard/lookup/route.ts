@@ -13,7 +13,7 @@ import User from "@/models/User";
  * 2. Search waitlists collection (field: referral_code)
  * 3. If not found, search users collection (field: referralCode)
  * 4. Count verified referrals (users where referredBy = code)
- * 5. Fetch top 10 leaderboard from waitlists (non-ghost, sorted by referral_count desc)
+ * 5. Calculate rank based on verifiedReferralCount in users collection
  * 6. Return unified response
  */
 export async function POST(req: NextRequest) {
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
     let name: string;
     let waitlistReferralCount = 0;
     let isWaitlistUser = false;
+    let currentUserInApp = appUser;
 
     if (waitlistUser) {
       // Waitlist user — has both waitlist + verified referral counts
@@ -68,26 +69,31 @@ export async function POST(req: NextRequest) {
       isWaitlistUser = false;
     }
 
-    // --- 6. Leaderboard — top 10 from waitlists, non-ghost, sorted desc ---
-    const leaderboardRaw = await Waitlist.find({ is_ghost: { $ne: true } })
-      .sort({ referral_count: -1 })
-      .limit(10)
-      .lean();
+    // --- 6. Calculate Rank based on verifiedReferralCount ---
+    // If the user isn't in the app users collection yet (only waitlist), 
+    // their verifiedReferralCount is 0 for ranking purposes.
+    const currentVerifiedCount = currentUserInApp ? currentUserInApp.verifiedReferralCount : verifiedReferralCount;
+    
+    let rank = 0;
+    if (currentVerifiedCount > 0) {
+      rank = await User.countDocuments({ 
+        verifiedReferralCount: { $gt: currentVerifiedCount } 
+      }) + 1;
+    }
 
-    const leaderboard = leaderboardRaw.map((entry) => ({
-      full_name: entry.full_name,
-      referral_code: entry.referral_code,
-      referral_count: entry.referral_count,
-    }));
+    const totalOnLeaderboard = await User.countDocuments({ 
+      verifiedReferralCount: { $gt: 0 } 
+    });
 
     return NextResponse.json({
       found: true,
       name,
       referralCode: code,
       waitlistReferralCount,
-      verifiedReferralCount,
+      verifiedReferralCount: currentVerifiedCount,
       isWaitlistUser,
-      leaderboard,
+      rank,
+      totalOnLeaderboard,
     });
   } catch (error) {
     console.error("[Dashboard Lookup Error]", error);
