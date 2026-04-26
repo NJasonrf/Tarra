@@ -56,7 +56,7 @@ export const Navbar: React.FC = () => {
 
             {/* Dashboard CTA */}
             <Link
-              href="/waitlist"
+              href="/dashboard"
               id="nav-dashboard-cta"
               className="px-5 py-2.5 bg-[#00c6a7] hover:bg-[#00b39a] text-white font-bold text-sm rounded-lg hover:shadow-lg hover:shadow-[#00c6a7]/20 active:scale-[0.97]"
             >
