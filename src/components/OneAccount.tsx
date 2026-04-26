@@ -31,7 +31,7 @@ const OneAccount: React.FC = () => {
     >
       <div className="container mx-auto px-6">
         {/* Heading */}
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center text-gray-900 dark:text-white mb-4 tracking-tight">
+        <h2 className="text-4xl sm:text-5xl md:text-6xl font-medium text-center text-gray-900 dark:text-white mb-4 tracking-tight">
           One Account. Everything.
         </h2>
 

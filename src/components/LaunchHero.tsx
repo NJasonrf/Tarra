@@ -31,7 +31,7 @@ const LaunchHero: React.FC = () => {
             </p>
 
             {/* Main Heading */}
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 dark:text-white leading-[1.05] mb-8 tracking-tight">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-medium text-gray-900 dark:text-white leading-[1.05] mb-8 tracking-tight">
               OAU Commerce.<br />
               Without the Chaos.
             </h1>
