@@ -16,6 +16,12 @@
     --primary-foreground: #ffffff;
     --secondary: #6b7280;
     --muted: #e5e7eb;
+    --card-bg: #ffffff;
+    --card-border: #e5e7eb;
+    --icon-bg: rgba(0, 198, 167, 0.12);
+
+    /* Grid pattern */
+    --grid-color: rgba(0, 0, 0, 0.04);
 
     --font-display: 'Satoshi', var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
     --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -26,17 +32,34 @@
     --foreground: #ffffff;
     --secondary: #9ca3af;
     --muted: #1f2937;
+    --card-bg: #1a2235;
+    --card-border: rgba(255, 255, 255, 0.08);
+    --icon-bg: rgba(0, 198, 167, 0.15);
+    --grid-color: rgba(255, 255, 255, 0.03);
   }
 
   body {
-    @apply antialiased min-h-screen transition-colors duration-200;
+    @apply antialiased min-h-screen;
     color: var(--foreground);
     background-color: var(--background);
     font-family: var(--font-sans);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   h1, h2, h3, h4, .font-display {
     font-family: var(--font-display);
+  }
+
+  /* Smooth theme transitions on key layout elements */
+  body,
+  header, nav, main, footer, section,
+  div, span, p, h1, h2, h3, h4, h5, h6,
+  a, button, [role="button"] {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  a, button, [role="button"] {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease, transform 0.15s ease;
   }
 }
 
@@ -47,5 +70,13 @@
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
+  }
+
+  /* Subtle grid background pattern */
+  .bg-grid {
+    background-image:
+      linear-gradient(var(--grid-color) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+    background-size: 60px 60px;
   }
 }

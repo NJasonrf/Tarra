@@ -5,14 +5,23 @@ import { Apple, Play } from "lucide-react";
 /**
  * LaunchHero Component
  * 
- * Clean hero section with social proof line, main heading,
- * subtext, and App Store / Google Play CTA buttons.
+ * Clean hero section with subtle grid background, social proof line,
+ * main heading, subtext, and App Store / Google Play CTA buttons.
  * Fully responsive with dark/light mode support.
  */
 const LaunchHero: React.FC = () => {
   return (
-    <section className="relative w-full pt-20 pb-24 md:pt-32 md:pb-40 overflow-hidden transition-colors bg-white dark:bg-[#0d1117]">
-      <div className="container relative z-10 mx-auto px-6">
+    <section
+      id="hero"
+      className="relative w-full min-h-[calc(100vh-64px)] flex items-center justify-center overflow-hidden bg-white dark:bg-[#0d1117]"
+    >
+      {/* Grid background overlay */}
+      <div className="absolute inset-0 bg-grid pointer-events-none" />
+
+      {/* Radial fade so grid fades at edges */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,var(--background)_100%)] pointer-events-none" />
+
+      <div className="container relative z-10 mx-auto px-6 py-20 md:py-32">
         <div className="flex flex-col items-center text-center">
           <div className="flex flex-col items-center max-w-4xl">
             {/* Social Proof Line */}
@@ -22,22 +31,22 @@ const LaunchHero: React.FC = () => {
             </p>
 
             {/* Main Heading */}
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-gray-900 dark:text-white leading-[1.05] mb-8 tracking-tight transition-colors">
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-gray-900 dark:text-white leading-[1.05] mb-8 tracking-tight">
               OAU Commerce.<br />
               Without the Chaos.
             </h1>
 
             {/* Subtext */}
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-medium mb-14 max-w-2xl transition-colors leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-medium mb-14 max-w-2xl leading-relaxed">
               Buy, sell, and offer services. All in one account.
             </p>
 
-            {/* CTA Buttons */}
+            {/* CTA Buttons — dark mode: white bg, light mode: black bg */}
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <Link
                 href="#"
                 id="cta-app-store"
-                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
               >
                 <Apple className="w-6 h-6" />
                 <div className="flex flex-col items-start leading-tight">
@@ -49,7 +58,7 @@ const LaunchHero: React.FC = () => {
               <Link
                 href="#"
                 id="cta-google-play"
-                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
               >
                 <Play className="w-6 h-6 fill-current" />
                 <div className="flex flex-col items-start leading-tight">
@@ -62,8 +71,8 @@ const LaunchHero: React.FC = () => {
         </div>
       </div>
 
-      {/* Subtle background glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00c6a7]/5 dark:bg-[#00c6a7]/8 rounded-full blur-[150px] pointer-events-none" />
+      {/* Subtle teal glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00c6a7]/5 dark:bg-[#00c6a7]/[0.08] rounded-full blur-[150px] pointer-events-none" />
     </section>
   );
 };

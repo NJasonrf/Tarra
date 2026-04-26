@@ -4,58 +4,102 @@ import React from "react";
 import { Smartphone } from "lucide-react";
 
 /**
- * ScreenshotShowcase Component
+ * See Tarra in Action — Horizontal scrollable showcase cards
  * 
- * "See Tarra in Action" section with horizontally scrollable
- * app screen cards, each with a gradient background and label.
- * Adaptive colors for dark/light mode.
+ * 5 tall portrait cards with gradient backgrounds (dark) / pastel backgrounds (light).
+ * Each has a phone mockup icon and a label at bottom-left.
  */
+
+const cards = [
+  {
+    label: "Browse",
+    darkGradient: "from-[#0a4d3f] to-[#0d6b5a]",
+    lightBg: "bg-[#e8e0f0]",
+  },
+  {
+    label: "Sell",
+    darkGradient: "from-[#4a2518] to-[#6b3d2e]",
+    lightBg: "bg-[#d4f0dc]",
+  },
+  {
+    label: "Services",
+    darkGradient: "from-[#3a1a5e] to-[#5b2d8a]",
+    lightBg: "bg-[#fce0c8]",
+  },
+  {
+    label: "Chat",
+    darkGradient: "from-[#1a1a5e] to-[#3a2d8a]",
+    lightBg: "bg-[#f4d0e8]",
+  },
+  {
+    label: "Analytics",
+    darkGradient: "from-[#0a3d5e] to-[#1a5a7a]",
+    lightBg: "bg-[#d0e8f4]",
+  },
+];
+
 const ScreenshotShowcase: React.FC = () => {
-  const screens = [
-    { label: "Browse", darkGradient: "from-teal-700 to-teal-900", lightGradient: "from-indigo-100 to-purple-100" },
-    { label: "Sell", darkGradient: "from-amber-700 to-orange-900", lightGradient: "from-green-100 to-emerald-100" },
-    { label: "Services", darkGradient: "from-purple-700 to-violet-900", lightGradient: "from-orange-100 to-amber-100" },
-    { label: "Chat", darkGradient: "from-cyan-700 to-blue-900", lightGradient: "from-pink-100 to-rose-100" },
-    { label: "Analytics", darkGradient: "from-emerald-700 to-green-900", lightGradient: "from-cyan-100 to-sky-100" },
-  ];
-
   return (
-    <section className="relative py-16 md:py-24 bg-white dark:bg-[#0d1117] overflow-hidden transition-colors">
-      {/* Subtle top border */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-white/5 to-transparent" />
+    <section
+      id="showcase"
+      className="w-full py-20 md:py-28 bg-white dark:bg-[#0d1117]"
+    >
+      {/* Section Heading */}
+      <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-center text-gray-900 dark:text-white mb-12 md:mb-16 px-6 tracking-tight">
+        See Tarra in Action
+      </h2>
 
-      <div className="container relative z-10 mx-auto px-6">
-        <div className="text-center mb-14">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
-            See Tarra in Action
-          </h2>
-        </div>
-
-        {/* Horizontal Scroll Cards */}
-        <div className="flex gap-5 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-6 -mx-6 px-6">
-          {screens.map((screen, index) => (
+      {/* Horizontal Scrollable Row */}
+      <div className="overflow-x-auto scrollbar-hide px-6 md:px-12">
+        <div className="flex gap-5 md:gap-6 w-max">
+          {cards.map((card) => (
             <div
-              key={index}
-              className="flex-shrink-0 w-64 sm:w-72 md:w-80 snap-center group"
+              key={card.label}
+              className="group relative flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden cursor-pointer"
             >
-              <div className={`relative aspect-[3/4] rounded-3xl overflow-hidden border border-gray-200 dark:border-white/5 transition-all duration-500 group-hover:border-gray-300 dark:group-hover:border-white/10 group-hover:scale-[1.02]`}>
-                {/* Gradient Background — dark mode */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${screen.darkGradient} hidden dark:block`} />
-                {/* Gradient Background — light mode */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${screen.lightGradient} dark:hidden`} />
-                
-                {/* Icon */}
-                <div className="absolute inset-0 flex items-center justify-center opacity-20 dark:opacity-30">
-                  <Smartphone className="w-20 h-20 text-gray-900 dark:text-white" />
-                </div>
+              {/* Dark mode gradient background */}
+              <div
+                className={`absolute inset-0 bg-gradient-to-b ${card.darkGradient} hidden dark:block`}
+              />
+              {/* Light mode pastel background */}
+              <div
+                className={`absolute inset-0 ${card.lightBg} dark:hidden`}
+              />
 
-                {/* Label */}
-                <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <span className="text-lg font-bold text-gray-900 dark:text-white">
-                    {screen.label}
-                  </span>
+              {/* Card border overlay */}
+              <div className="absolute inset-0 rounded-2xl border border-white/10 dark:border-white/[0.08]" />
+
+              {/* Phone/Grid Mockup Icon — centered */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-16 h-16 rounded-xl bg-black/10 dark:bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                  <div className="grid grid-cols-3 gap-1">
+                    {Array.from({ length: 9 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-2 h-2 rounded-[2px]"
+                        style={{
+                          backgroundColor: [
+                            "#f87171", "#fb923c", "#fbbf24",
+                            "#4ade80", "#60a5fa", "#a78bfa",
+                            "#f472b6", "#34d399", "#f97316",
+                          ][i],
+                          opacity: 0.8,
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
+
+              {/* Label */}
+              <div className="absolute bottom-5 left-5">
+                <span className="text-white dark:text-white text-xl font-bold drop-shadow-lg">
+                  {card.label}
+                </span>
+              </div>
+
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-2xl" />
             </div>
           ))}
         </div>

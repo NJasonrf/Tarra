@@ -1,12 +1,13 @@
 import React from "react";
 import Link from "next/link";
-import { Apple, Play, Twitter, Github, Instagram } from "lucide-react";
+import Image from "next/image";
+import { Apple, Play, Twitter, Instagram, Linkedin } from "lucide-react";
 
 /**
  * Global Footer Component
  * 
  * Full footer with logo, download buttons, product/support/legal columns,
- * copyright, and social icons. Dark background always.
+ * copyright, and social icons. Dark background always (#0d1117).
  */
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -39,18 +40,22 @@ export const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-[#0d1117] border-t border-white/5 transition-colors">
+    <footer className="bg-[#0d1117] border-t border-white/5">
       <div className="container mx-auto px-6 py-16 md:py-20">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
           {/* Brand Column */}
           <div className="lg:col-span-2">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-[#00c6a7] rounded-lg flex items-center justify-center">
-                <span className="text-white font-black text-xl leading-none">T</span>
-              </div>
-              <span className="text-lg font-bold text-white tracking-tight">Tarra</span>
+            <Link href="/" className="flex items-center gap-1 mb-4">
+              <Image
+                src="/assets/favicon_nobg.png"
+                alt="Tarra Logo"
+                width={36}
+                height={36}
+                className="w-9 h-9 object-contain"
+              />
+              <span className="text-xl font-black text-white tracking-tight">Tarra</span>
             </Link>
 
             <p className="text-sm text-gray-400 mb-6 max-w-xs">
@@ -61,7 +66,7 @@ export const Footer: React.FC = () => {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="#"
-                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 rounded-xl hover:border-white/20 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 rounded-xl hover:border-white/20"
               >
                 <Apple className="w-4 h-4 text-white" />
                 <div className="flex flex-col leading-tight">
@@ -71,7 +76,7 @@ export const Footer: React.FC = () => {
               </Link>
               <Link
                 href="#"
-                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 rounded-xl hover:border-white/20 transition-colors"
+                className="flex items-center gap-2 px-4 py-2.5 border border-white/10 rounded-xl hover:border-white/20"
               >
                 <Play className="w-4 h-4 text-white fill-white" />
                 <div className="flex flex-col leading-tight">
@@ -93,7 +98,7 @@ export const Footer: React.FC = () => {
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                      className="text-sm text-gray-400 hover:text-white"
                     >
                       {link.label}
                     </Link>
@@ -112,14 +117,14 @@ export const Footer: React.FC = () => {
 
           {/* Social Icons */}
           <div className="flex items-center gap-4">
-            <a href="#" className="text-gray-500 hover:text-white transition-colors" aria-label="Twitter">
+            <a href="https://x.com/tarra_ng" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="Twitter">
               <Twitter className="w-4 h-4" />
             </a>
-            <a href="#" className="text-gray-500 hover:text-white transition-colors" aria-label="GitHub">
-              <Github className="w-4 h-4" />
-            </a>
-            <a href="#" className="text-gray-500 hover:text-white transition-colors" aria-label="Instagram">
+            <a href="https://instagram.com/usetarra" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="Instagram">
               <Instagram className="w-4 h-4" />
+            </a>
+            <a href="https://www.linkedin.com/company/tarra-digital" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="LinkedIn">
+              <Linkedin className="w-4 h-4" />
             </a>
           </div>
         </div>
