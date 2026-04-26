@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useRef, useState, useCallback } from "react";
 
 /**
- * See Tarra in Action — Slow auto-scrolling marquee showcase cards
+ * See Tarra in Action — Auto-scrolling marquee with drag/swipe support
  * 
- * 5 tall portrait cards duplicated for seamless infinite scroll.
- * Pauses on hover. Dark gradients / light pastels.
+ * Slow infinite scroll right-to-left.
+ * Pauses on hover or touch. Supports mouse drag and touch swipe.
  */
 
 const cards = [
@@ -38,20 +38,11 @@ const cards = [
 ];
 
 const CardItem = ({ card }: { card: (typeof cards)[number] }) => (
-  <div className="relative flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden">
-    {/* Dark mode gradient background */}
-    <div
-      className={`absolute inset-0 bg-gradient-to-b ${card.darkGradient} hidden dark:block`}
-    />
-    {/* Light mode pastel background */}
-    <div
-      className={`absolute inset-0 ${card.lightBg} dark:hidden`}
-    />
-
-    {/* Card border overlay */}
+  <div className="relative flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] aspect-[3/4] rounded-2xl overflow-hidden select-none">
+    <div className={`absolute inset-0 bg-gradient-to-b ${card.darkGradient} hidden dark:block`} />
+    <div className={`absolute inset-0 ${card.lightBg} dark:hidden`} />
     <div className="absolute inset-0 rounded-2xl border border-white/10 dark:border-white/[0.08]" />
 
-    {/* Phone/Grid Mockup Icon — centered */}
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="w-16 h-16 rounded-xl bg-black/10 dark:bg-white/10 flex items-center justify-center backdrop-blur-sm">
         <div className="grid grid-cols-3 gap-1">
@@ -73,9 +64,8 @@ const CardItem = ({ card }: { card: (typeof cards)[number] }) => (
       </div>
     </div>
 
-    {/* Label */}
     <div className="absolute bottom-5 left-5">
-      <span className="text-white text-xl font-bold drop-shadow-lg">
+      <span className="text-white text-xl font-bold drop-shadow-lg pointer-events-none">
         {card.label}
       </span>
     </div>
@@ -83,24 +73,61 @@ const CardItem = ({ card }: { card: (typeof cards)[number] }) => (
 );
 
 const ScreenshotShowcase: React.FC = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    const el = containerRef.current;
+    if (!el) return;
+    setIsDragging(true);
+    setStartX(e.clientX);
+    setScrollLeft(el.scrollLeft);
+    el.setPointerCapture(e.pointerId);
+  }, []);
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!isDragging || !containerRef.current) return;
+      const dx = e.clientX - startX;
+      containerRef.current.scrollLeft = scrollLeft - dx;
+    },
+    [isDragging, startX, scrollLeft]
+  );
+
+  const handlePointerUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
   return (
     <section
       id="showcase"
       className="w-full py-20 md:py-28 bg-white dark:bg-[#0d1117] overflow-hidden"
     >
-      {/* Section Heading */}
-      <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-center text-gray-900 dark:text-white mb-12 md:mb-16 px-6 tracking-tight">
+      <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center text-gray-900 dark:text-white mb-12 md:mb-16 px-6 tracking-tight">
         See Tarra in Action
       </h2>
 
-      {/* Marquee container — pauses on hover */}
-      <div className="group relative">
-        <div className="flex gap-5 md:gap-6 animate-marquee group-hover:[animation-play-state:paused]">
-          {/* First set */}
+      {/* Scrollable + auto-marquee container */}
+      <div
+        ref={containerRef}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+        className={`overflow-x-auto scrollbar-hide cursor-grab group ${
+          isDragging ? "cursor-grabbing" : ""
+        }`}
+      >
+        <div
+          className={`flex gap-5 md:gap-6 w-max px-6 md:px-12 ${
+            isDragging ? "" : "animate-marquee group-hover:[animation-play-state:paused]"
+          }`}
+        >
           {cards.map((card) => (
             <CardItem key={card.label} card={card} />
           ))}
-          {/* Duplicate for seamless loop */}
           {cards.map((card) => (
             <CardItem key={`dup-${card.label}`} card={card} />
           ))}

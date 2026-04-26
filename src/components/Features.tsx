@@ -56,7 +56,7 @@ const Features: React.FC = () => {
     >
       <div className="container mx-auto px-6">
         {/* Section Heading */}
-        <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-center text-gray-900 dark:text-white mb-14 md:mb-20 tracking-tight">
+        <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-center text-gray-900 dark:text-white mb-14 md:mb-20 tracking-tight">
           Built for Campus Life
         </h2>
 
