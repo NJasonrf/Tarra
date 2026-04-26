@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 import {
   Copy,
   Check,
@@ -16,6 +17,8 @@ import {
   Share2,
   Apple,
   Play,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 /* ─────────────────────── Types ─────────────────────── */
@@ -87,6 +90,12 @@ export default function DashboardPage() {
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [data, setData] = useState<DashboardData | null>(null);
+  const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
+
+  const isDark = resolvedTheme === "dark";
 
   const lookup = useCallback(async (referralCode: string) => {
     setPhase("loading");
@@ -151,12 +160,23 @@ export default function DashboardPage() {
               <Image src="/assets/favicon_nobg.png" alt="Tarra Logo" width={36} height={36} className="w-9 h-9 object-contain" />
               <span className="text-xl font-black text-gray-900 dark:text-white tracking-tight">Tarra</span>
             </Link>
-            {phase === "dashboard" && (
-              <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                <LogOut className="w-4 h-4" />
-                <span className="hidden sm:inline">Exit</span>
-              </button>
-            )}
+            <div className="flex items-center gap-3">
+              {mounted && (
+                <button
+                  onClick={() => setTheme(isDark ? "light" : "dark")}
+                  className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 dark:border-white/10 hover:border-gray-300 dark:hover:border-white/20 text-gray-600 dark:text-white/70 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+                >
+                  {isDark ? <Sun className="w-[18px] h-[18px]" /> : <Moon className="w-[18px] h-[18px]" />}
+                </button>
+              )}
+              {phase === "dashboard" && (
+                <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden sm:inline">Exit</span>
+                </button>
+              )}
+            </div>
           </div>
         </nav>
       </header>
