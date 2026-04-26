@@ -21,7 +21,7 @@ const LaunchHero: React.FC = () => {
       {/* Radial fade so grid fades at edges */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,var(--background)_100%)] pointer-events-none" />
 
-      <div className="container relative z-10 mx-auto px-6 py-20 md:py-32">
+      <div className="container relative z-10 mx-auto px-6 pt-12 pb-20 md:pt-20 md:pb-32">
         <div className="flex flex-col items-center text-center">
           <div className="flex flex-col items-center max-w-4xl">
             {/* Social Proof Line */}
