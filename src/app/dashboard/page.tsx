@@ -216,6 +216,12 @@ export default function DashboardPage() {
                 >
                   Access Dashboard
                 </button>
+
+                <div className="pt-2 text-center">
+                  <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                    Don&apos;t have a code? Register on the <span className="text-gray-900 dark:text-white font-bold">Tarra app</span> and find yours in <span className="text-[#00c6a7]">Settings</span>.
+                  </p>
+                </div>
               </form>
 
               <div className="mt-8 text-center">
