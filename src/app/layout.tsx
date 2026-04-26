@@ -60,6 +60,7 @@ export const metadata: Metadata = {
 };
 
 import { Providers } from "@/components/Providers";
+import { Footer } from "@/components/Footer";
 
 export default function RootLayout({
   children,
@@ -121,6 +122,7 @@ export default function RootLayout({
         <div className="relative z-10 min-h-screen flex flex-col">
           <Providers>
             {children}
+            <Footer />
           </Providers>
         </div>
       </body>

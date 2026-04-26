@@ -20,6 +20,7 @@ import {
   Sun,
   Moon,
   TrendingUp,
+  Smartphone,
 } from "lucide-react";
 
 /* ─────────────────────── Types ─────────────────────── */
@@ -273,18 +274,14 @@ export default function DashboardPage() {
               />
             </div>
 
-            {/* Referral Link + Share */}
-            <ReferralLinkBlock code={data.referralCode} />
+            {/* How to Refer Instructions */}
+            <HowToReferBlock code={data.referralCode} />
 
             {/* Download CTA */}
             <DownloadCTA />
 
-            {/* Footer */}
-            <div className="mt-12 pt-8 border-t border-gray-200 dark:border-white/5 text-center">
-              <p className="text-[11px] text-gray-400 dark:text-gray-600 font-medium">
-                Stats update in real-time. Keep sharing to climb the leaderboard.
-              </p>
-            </div>
+            {/* Spacer for global footer */}
+            <div className="h-10" />
           </div>
         )}
       </div>
@@ -382,23 +379,14 @@ function StatCard({ icon, value, label }: { icon: React.ReactNode; value: number
   );
 }
 
-function ReferralLinkBlock({ code }: { code: string }) {
+function HowToReferBlock({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
-  const url = `https://tarra.ng?ref=${code}`;
-  const shareText = `Join me on Tarra — OAU's campus marketplace! Use my code ${code} to get started: ${url}`;
-
-  const handleCopy = async () => {
-    try {
-      await copyToClipboard(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {}
-  };
+  const shareText = `Join me on Tarra — OAU's campus marketplace! Use my code ${code} when you sign up on the app.`;
 
   const handleShare = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Join Tarra", text: shareText, url });
+        await navigator.share({ title: "Join Tarra", text: shareText });
       } catch {}
     } else {
       try {
@@ -410,36 +398,26 @@ function ReferralLinkBlock({ code }: { code: string }) {
   };
 
   return (
-    <div>
-      <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.2em] mb-3">
-        Your Referral Link
-      </p>
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex-grow px-4 py-3.5 bg-gray-50 dark:bg-[#1a2235] border border-gray-200 dark:border-white/[0.08] rounded-xl text-gray-500 dark:text-gray-400 text-sm truncate font-mono">
-          {url}
+    <div className="p-6 sm:p-8 rounded-2xl border border-gray-200 dark:border-white/[0.08] bg-gray-50/50 dark:bg-[#1a2235]/50">
+      <div className="flex items-start gap-4 mb-6">
+        <div className="w-10 h-10 rounded-xl bg-[#00c6a7]/10 dark:bg-[#00c6a7]/15 flex items-center justify-center flex-shrink-0">
+          <Smartphone className="w-5 h-5 text-[#00c6a7]" />
         </div>
-        <div className="flex gap-2">
-          <button
-            onClick={handleCopy}
-            className={`flex-1 sm:flex-none px-5 py-3.5 text-sm font-bold rounded-xl transition-all whitespace-nowrap flex items-center justify-center gap-2 bg-[#00c6a7] text-white hover:bg-[#00b39a] active:scale-[0.97] shadow-lg shadow-[#00c6a7]/20`}
-          >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            {copied ? "Copied!" : "Copy"}
-          </button>
-          <button
-            onClick={handleShare}
-            className="px-4 py-3.5 rounded-xl border border-gray-200 dark:border-white/[0.08] text-gray-600 dark:text-gray-400 hover:border-[#00c6a7]/30 hover:text-[#00c6a7] transition-all flex items-center justify-center gap-2"
-          >
-            <Share2 className="w-4 h-4" />
-            <span className="text-sm font-bold sm:inline hidden">Share</span>
-          </button>
+        <div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">How to Refer</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
+            Ask your friends to enter your referral code <span className="text-[#00c6a7] font-black">{code}</span> when they sign up on the Tarra mobile app.
+          </p>
         </div>
       </div>
-      {copied && (
-        <p className="text-[10px] font-bold text-[#00c6a7] uppercase tracking-[0.15em] mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
-          ✨ Link copied to clipboard
-        </p>
-      )}
+      
+      <button
+        onClick={handleShare}
+        className="w-full py-4 rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold text-sm flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-[0.99] transition-all"
+      >
+        <Share2 className="w-4 h-4" />
+        {copied ? "Copied Share Text!" : "Share Referral Code"}
+      </button>
     </div>
   );
 }

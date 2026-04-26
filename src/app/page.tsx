@@ -33,7 +33,6 @@ export default async function Home() {
         <OneAccount />
       </main>
 
-      <Footer />
     </div>
   );
 }
