@@ -13,7 +13,7 @@ const LaunchHero: React.FC = () => {
   return (
     <section
       id="hero"
-      className="relative w-full min-h-[calc(100vh-64px)] flex items-center justify-center overflow-hidden bg-[#EFF1F3] dark:bg-[#00c6a7]"
+      className="relative w-full min-h-[calc(100vh-64px)] flex items-center justify-center overflow-hidden bg-white dark:bg-[#00c6a7]"
     >
       {/* Grid background overlay */}
       <div className="absolute inset-0 bg-grid pointer-events-none" />

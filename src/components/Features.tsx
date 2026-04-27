@@ -52,7 +52,7 @@ const Features: React.FC = () => {
   return (
     <section
       id="features"
-      className="w-full py-20 md:py-28 bg-[#EFF1F3] dark:bg-[#00c6a7]"
+      className="w-full py-20 md:py-28 bg-white dark:bg-[#00c6a7]"
     >
       <div className="container mx-auto px-6">
         {/* Section Heading */}
