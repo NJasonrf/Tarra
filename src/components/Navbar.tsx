@@ -21,7 +21,7 @@ export const Navbar: React.FC = () => {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white/90 dark:bg-[#0d1117]/90 backdrop-blur-md border-b border-gray-200/60 dark:border-white/5">
+    <header className="sticky top-0 z-50 w-full bg-[#EFF1F3]/90 dark:bg-[#0d1117]/90 backdrop-blur-md border-b border-gray-200/60 dark:border-white/5">
       <nav>
         <div className="container mx-auto px-6 py-3 flex justify-between items-center">
           {/* Logo */}

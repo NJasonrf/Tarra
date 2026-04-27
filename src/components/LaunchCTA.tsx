@@ -10,7 +10,7 @@ import { Apple, Play } from "lucide-react";
  */
 const LaunchCTA: React.FC = () => {
   return (
-    <section className="py-24 md:py-36 bg-white dark:bg-[#0d1117] relative overflow-hidden transition-colors">
+    <section className="py-24 md:py-36 bg-[var(--background)] dark:bg-[#0d1117] relative overflow-hidden transition-colors">
       {/* Top divider */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-white/5 to-transparent" />
 

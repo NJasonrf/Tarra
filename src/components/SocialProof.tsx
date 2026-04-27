@@ -22,7 +22,7 @@ const SocialProof: React.FC = () => {
   ];
 
   return (
-    <section className="py-20 md:py-32 bg-white dark:bg-[#0d1117] transition-colors">
+    <section className="py-20 md:py-32 bg-[var(--background)] dark:bg-[#0d1117] transition-colors">
       {/* Top divider */}
       <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-white/5 to-transparent mb-16 md:mb-24" />
 

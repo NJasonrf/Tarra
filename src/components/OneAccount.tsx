@@ -27,7 +27,7 @@ const OneAccount: React.FC = () => {
   return (
     <section
       id="one-account"
-      className="w-full py-20 md:py-28 bg-white dark:bg-[#0d1117]"
+      className="w-full py-20 md:py-28 bg-[var(--background)] dark:bg-[#0d1117]"
     >
       <div className="container mx-auto px-6">
         {/* Heading */}
