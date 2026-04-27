@@ -3,7 +3,6 @@ import { Footer } from "@/components/Footer";
 import LaunchHero from "@/components/LaunchHero";
 import ScreenshotShowcase from "@/components/ScreenshotShowcase";
 import Features from "@/components/Features";
-import OneAccount from "@/components/OneAccount";
 
 export const dynamic = "force-dynamic";
 
@@ -15,8 +14,7 @@ export const dynamic = "force-dynamic";
  * 2. Hero — OAU Commerce. Without the Chaos.
  * 3. See Tarra in Action — scrollable showcase cards
  * 4. Built for Campus Life — 2×3 feature grid
- * 5. One Account. Everything. — Students & Brands cards
- * 6. Footer (always dark)
+ * 5. Footer (always dark)
  */
 export default async function Home() {
   return (
@@ -29,8 +27,6 @@ export default async function Home() {
         <ScreenshotShowcase />
         
         <Features />
-        
-        <OneAccount />
       </main>
 
     </div>

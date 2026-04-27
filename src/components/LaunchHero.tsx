@@ -13,7 +13,7 @@ const LaunchHero: React.FC = () => {
   return (
     <section
       id="hero"
-      className="relative w-full min-h-[calc(100vh-64px)] flex items-center justify-center overflow-hidden bg-white dark:bg-[#0d1117]"
+      className="relative w-full min-h-[calc(100vh-64px)] flex items-center justify-center overflow-hidden bg-[#EFF1F3] dark:bg-[#00c6a7]"
     >
       {/* Grid background overlay */}
       <div className="absolute inset-0 bg-grid pointer-events-none" />
@@ -25,9 +25,9 @@ const LaunchHero: React.FC = () => {
         <div className="flex flex-col items-center text-center">
           <div className="flex flex-col items-center max-w-4xl">
             {/* Social Proof Line */}
-            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 font-medium mb-8 tracking-wide">
+            <p className="text-sm sm:text-base text-gray-500 dark:text-white/70 font-medium mb-8 tracking-wide">
               Trusted by{" "}
-              <span className="text-[#00c6a7] font-bold">2,500+ OAU students</span>
+              <span className="text-[#00c6a7] dark:text-white font-bold">2,500+ OAU students</span>
             </p>
 
             {/* Main Heading */}
@@ -37,7 +37,7 @@ const LaunchHero: React.FC = () => {
             </h1>
 
             {/* Subtext */}
-            <p className="text-lg sm:text-xl md:text-2xl text-gray-500 dark:text-gray-400 font-medium mb-14 max-w-2xl leading-relaxed">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-500 dark:text-white/70 font-medium mb-14 max-w-2xl leading-relaxed">
               Buy, sell, and offer services. All in one account.
             </p>
 
@@ -46,7 +46,7 @@ const LaunchHero: React.FC = () => {
               <Link
                 href="#"
                 id="cta-app-store"
-                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-[#009e88] font-bold py-4 px-8 rounded-2xl hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
               >
                 <Apple className="w-6 h-6" />
                 <div className="flex flex-col items-start leading-tight">
@@ -58,7 +58,7 @@ const LaunchHero: React.FC = () => {
               <Link
                 href="#"
                 id="cta-google-play"
-                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-gray-900 font-bold py-4 px-8 rounded-2xl hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
+                className="w-full sm:w-auto flex items-center justify-center gap-3 bg-gray-900 dark:bg-white text-white dark:text-[#009e88] font-bold py-4 px-8 rounded-2xl hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl border border-transparent"
               >
                 <Play className="w-6 h-6 fill-current" />
                 <div className="flex flex-col items-start leading-tight">
@@ -72,7 +72,7 @@ const LaunchHero: React.FC = () => {
       </div>
 
       {/* Subtle teal glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00c6a7]/5 dark:bg-[#00c6a7]/[0.08] rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#00c6a7]/5 dark:bg-white/[0.06] rounded-full blur-[150px] pointer-events-none" />
     </section>
   );
 };

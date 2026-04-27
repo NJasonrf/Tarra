@@ -1,51 +1,33 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Apple, Play, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Apple, Play, Github, Instagram, Mail } from "lucide-react";
 
 /**
  * Global Footer Component
  * 
- * Full footer with logo, download buttons, product/support/legal columns,
- * copyright, and social icons. Dark background always (#0d1117).
+ * Full footer with logo, download buttons, simplified link columns,
+ * copyright, and social icons (X, GitHub, Instagram, Gmail).
+ * Dark background always (#0d1117).
  */
 export const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
-  const columns = [
-    {
-      title: "Product",
-      links: [
-        { label: "Features", href: "#features" },
-        { label: "How It Works", href: "#" },
-        { label: "Pricing", href: "#" },
-      ],
-    },
-    {
-      title: "Support",
-      links: [
-        { label: "FAQs", href: "#" },
-        { label: "Contact Us", href: "#" },
-        { label: "Help Center", href: "#" },
-      ],
-    },
-    {
-      title: "Legal",
-      links: [
-        { label: "Terms of Service", href: "#" },
-        { label: "Privacy Policy", href: "#" },
-        { label: "Cookie Policy", href: "#" },
-      ],
-    },
+  const footerLinks = [
+    { label: "About", href: "/about" },
+    { label: "Privacy", href: "/privacy" },
+    { label: "Terms", href: "/terms" },
+    { label: "Contact", href: "mailto:hello@tarra.ng" },
+    { label: "Rules", href: "/rules" },
   ];
 
   return (
     <footer className="bg-[#0d1117] border-t border-white/5">
       <div className="container mx-auto px-6 py-16 md:py-20">
         {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-8 mb-16">
           {/* Brand Column */}
-          <div className="lg:col-span-2">
+          <div>
             {/* Logo */}
             <Link href="/" className="flex items-center gap-1 mb-4">
               <Image
@@ -87,26 +69,24 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Link Columns */}
-          {columns.map((column) => (
-            <div key={column.title}>
-              <h4 className="text-sm font-bold text-white mb-4 tracking-wide">
-                {column.title}
-              </h4>
-              <ul className="flex flex-col gap-3">
-                {column.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-gray-400 hover:text-white"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Links Column */}
+          <div className="flex flex-col justify-center">
+            <h4 className="text-sm font-bold text-white mb-4 tracking-wide">
+              Links
+            </h4>
+            <ul className="flex flex-wrap gap-x-6 gap-y-3">
+              {footerLinks.map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-400 hover:text-white"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Bottom Bar */}
@@ -115,16 +95,25 @@ export const Footer: React.FC = () => {
             &copy; {currentYear} Tarra. All rights reserved.
           </p>
 
-          {/* Social Icons */}
+          {/* Social Icons: X, GitHub, Instagram, Gmail */}
           <div className="flex items-center gap-4">
-            <a href="https://x.com/tarra_ng" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="Twitter">
-              <Twitter className="w-4 h-4" />
+            {/* X (formerly Twitter) */}
+            <a href="https://x.com/usetarra" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="X (Twitter)">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
             </a>
+            {/* GitHub */}
+            <a href="https://github.com/usetarra" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="GitHub">
+              <Github className="w-4 h-4" />
+            </a>
+            {/* Instagram */}
             <a href="https://instagram.com/usetarra" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="Instagram">
               <Instagram className="w-4 h-4" />
             </a>
-            <a href="https://www.linkedin.com/company/tarra-digital" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="LinkedIn">
-              <Linkedin className="w-4 h-4" />
+            {/* Gmail / Email */}
+            <a href="mailto:hello@tarra.ng" className="text-gray-500 hover:text-white" aria-label="Email">
+              <Mail className="w-4 h-4" />
             </a>
           </div>
         </div>

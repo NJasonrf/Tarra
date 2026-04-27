@@ -103,7 +103,7 @@ const ScreenshotShowcase: React.FC = () => {
   return (
     <section
       id="showcase"
-      className="w-full py-20 md:py-28 bg-white dark:bg-[#0d1117] overflow-hidden"
+      className="w-full py-20 md:py-28 bg-[#EFF1F3] dark:bg-[#00c6a7] overflow-hidden"
     >
       <h2 className="text-4xl sm:text-5xl md:text-6xl font-medium text-center text-gray-900 dark:text-white mb-12 md:mb-16 px-6 tracking-tight">
         See Tarra in Action
