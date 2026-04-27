@@ -1,7 +1,7 @@
 import React from "react";
 import {
   DollarSign,
-  Truck,
+  MapPin,
   Store,
   BarChart3,
   Shield,
@@ -19,12 +19,12 @@ const features = [
   {
     icon: DollarSign,
     title: "Zero Fees",
-    description: "No commission. No hidden charges. Ever.",
+    description: "Keep 100% of what you earn.",
   },
   {
-    icon: Truck,
+    icon: MapPin,
     title: "Hostel Delivery",
-    description: "Delivered straight to your hostel door.",
+    description: "Campus-wide delivery made easy.",
   },
   {
     icon: Store,
