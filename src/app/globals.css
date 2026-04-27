@@ -28,14 +28,14 @@
   }
 
   .dark {
-    --background: #00c6a7;
+    --background: #0d1117;
     --foreground: #ffffff;
-    --secondary: #e0fff8;
-    --muted: #009e88;
-    --card-bg: #009e88;
-    --card-border: rgba(255, 255, 255, 0.12);
-    --icon-bg: rgba(255, 255, 255, 0.15);
-    --grid-color: rgba(255, 255, 255, 0.06);
+    --secondary: #9ca3af;
+    --muted: #1f2937;
+    --card-bg: #1a2235;
+    --card-border: rgba(255, 255, 255, 0.08);
+    --icon-bg: rgba(0, 198, 167, 0.15);
+    --grid-color: rgba(255, 255, 255, 0.03);
   }
 
   body {

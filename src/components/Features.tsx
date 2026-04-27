@@ -52,7 +52,7 @@ const Features: React.FC = () => {
   return (
     <section
       id="features"
-      className="w-full py-20 md:py-28 bg-white dark:bg-[#00c6a7]"
+      className="w-full py-20 md:py-28 bg-white dark:bg-[#0d1117]"
     >
       <div className="container mx-auto px-6">
         {/* Section Heading */}
@@ -67,11 +67,11 @@ const Features: React.FC = () => {
             return (
               <div
                 key={feature.title}
-                className="group p-7 md:p-8 rounded-2xl border bg-white dark:bg-[#009e88] border-gray-200 dark:border-white/[0.12] hover:border-[#00c6a7]/30 dark:hover:border-white/25"
+                className="group p-7 md:p-8 rounded-2xl border bg-white dark:bg-[#1a2235] border-gray-200 dark:border-white/[0.08] hover:border-[#00c6a7]/30 dark:hover:border-[#00c6a7]/20"
               >
                 {/* Icon Badge */}
-                <div className="w-12 h-12 rounded-xl bg-[#00c6a7]/10 dark:bg-white/15 flex items-center justify-center mb-6">
-                  <Icon className="w-5 h-5 text-[#00c6a7] dark:text-white" strokeWidth={2} />
+                <div className="w-12 h-12 rounded-xl bg-[#00c6a7]/10 dark:bg-[#00c6a7]/15 flex items-center justify-center mb-6">
+                  <Icon className="w-5 h-5 text-[#00c6a7]" strokeWidth={2} />
                 </div>
 
                 {/* Title */}
