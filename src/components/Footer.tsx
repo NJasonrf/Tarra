@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Apple, Play, Github, Instagram, Mail } from "lucide-react";
+import { Apple, Play, Linkedin, Instagram, Mail } from "lucide-react";
 
 /**
  * Global Footer Component
@@ -103,9 +103,9 @@ export const Footer: React.FC = () => {
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
             </a>
-            {/* GitHub */}
-            <a href="https://github.com/usetarra" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="GitHub">
-              <Github className="w-4 h-4" />
+            {/* LinkedIn */}
+            <a href="https://www.linkedin.com/company/tarra-digital" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="LinkedIn">
+              <Linkedin className="w-4 h-4" />
             </a>
             {/* Instagram */}
             <a href="https://instagram.com/usetarra" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white" aria-label="Instagram">
