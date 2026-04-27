@@ -18,6 +18,7 @@ export const Footer: React.FC = () => {
     { label: "Privacy", href: "/privacy" },
     { label: "Terms", href: "/terms" },
     { label: "Contact", href: "mailto:hello@tarra.ng" },
+    { label: "FAQs", href: "/faqs" },
     { label: "Rules", href: "/rules" },
   ];
 
