@@ -11,33 +11,25 @@ const config: Config = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: "#0FB9B1",
+          DEFAULT: "#00c6a7",
           foreground: "#FFFFFF",
         },
-        dark: "#0F172A",
+        dark: "#0d1117",
         secondary: "#64748B",
         muted: "#E5E7EB",
-        // Mapping existing utilities to brand palette for non-destructive update
-        stone: {
-          50: "#E5E7EB",
-          100: "#E5E7EB",
-          200: "#E5E7EB",
-          300: "#E5E7EB",
-          400: "#64748B",
-          500: "#64748B",
-          600: "#64748B",
-          700: "#0F172A",
-          800: "#0F172A",
-          900: "#0F172A",
-          950: "#0F172A",
-        },
-        amber: {
-          500: "#0FB9B1", // Redirecting warnings to brand teal
-        },
       },
       fontFamily: {
         sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
-        display: ["var(--font-satoshi)", "ui-sans-serif", "system-ui"],
+        display: ["'Satoshi'", "var(--font-inter)", "ui-sans-serif", "system-ui"],
+      },
+      animation: {
+        marquee: "marquee 30s linear infinite",
+      },
+      keyframes: {
+        marquee: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
     },
   },

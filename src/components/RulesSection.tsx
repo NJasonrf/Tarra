@@ -31,17 +31,17 @@ const RulesSection: React.FC = () => {
     {
       icon: <CalendarDays className="w-4 h-4 text-primary" />,
       label: "Launch Day",
-      value: "April 15, 2026",
+      value: "April 19, 2026",
     },
     {
       icon: <ShieldCheck className="w-4 h-4 text-primary" />,
       label: "Verification Window",
-      value: "April 15–22 (7 days)",
+      value: "April 19–26 (7 days)",
     },
     {
       icon: <Banknote className="w-4 h-4 text-primary" />,
       label: "Winners Paid",
-      value: "April 24 via Bank Transfer",
+      value: "April 28 via Bank Transfer",
     },
   ];
 

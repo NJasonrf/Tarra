@@ -60,6 +60,7 @@ export const metadata: Metadata = {
 };
 
 import { Providers } from "@/components/Providers";
+import { Footer } from "@/components/Footer";
 
 export default function RootLayout({
   children,
@@ -82,18 +83,6 @@ export default function RootLayout({
         <link rel="preload" href="/assets/favicon.jpeg" as="image" />
       </head>
       <body className="antialiased selection:bg-primary/30 transition-colors duration-200 font-sans overflow-x-hidden">
-        {/* Global Brand Background Pattern */}
-        <div 
-          className="fixed inset-0 z-0 pointer-events-none opacity-[0.03]" 
-          aria-hidden="true"
-          style={{ 
-            backgroundImage: 'url("/assets/bg.jpeg")',
-            backgroundSize: '400px 400px',
-            backgroundRepeat: 'repeat',
-            backgroundAttachment: 'fixed',
-            filter: 'blur(1px)'
-          }}
-        />
         
         <script
           type="application/ld+json"
@@ -127,9 +116,13 @@ export default function RootLayout({
             }),
           }}
         />
+        {/* Global grid background */}
+        <div className="fixed inset-0 bg-grid pointer-events-none z-0" />
+        <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,var(--background)_100%)] pointer-events-none z-0" />
         <div className="relative z-10 min-h-screen flex flex-col">
           <Providers>
             {children}
+            <Footer />
           </Providers>
         </div>
       </body>
